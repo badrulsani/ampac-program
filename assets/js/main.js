@@ -13,8 +13,9 @@
       teen: "https://akademiampac.onpay.my/order/form/pcsberaniberbicarasuperhero2026"
     },
     programStart: "2026-12-07T09:30:00+08:00",
-    youtubeId: "-VTYDr9ITLs",
+    mainVideo: "https://www.facebook.com/watch/?v=1259323399372881",
     facebookVideos: [
+      "https://www.youtube.com/watch?v=-VTYDr9ITLs",
       "https://www.facebook.com/share/r/18fKDR2VwX/",
       "https://www.facebook.com/share/r/19WgyUmSc8/",
       "https://www.facebook.com/share/v/19nrvmhbcK/",
@@ -25,7 +26,7 @@
       "https://www.facebook.com/share/r/17uBcckzcs/",
       "https://www.facebook.com/share/r/1H5sEcMNyQ/"
     ],
-    reelCovers: ["photo-10", "photo-21", "photo-29", "photo-28", "photo-13", "photo-16", "photo-24", "photo-25", "photo-33"],
+    reelCovers: ["photo-08", "photo-10", "photo-21", "photo-29", "photo-28", "photo-13", "photo-16", "photo-24", "photo-25", "photo-33"],
     railA: ["photo-12", "photo-08", "photo-05", "photo-15", "photo-06", "photo-09", "photo-21", "photo-31", "photo-17", "photo-02", "photo-20"],
     railB: ["photo-11", "photo-14", "photo-26", "photo-18", "photo-23", "photo-03", "photo-27", "photo-30", "photo-32", "photo-01", "photo-07"]
   };
@@ -104,8 +105,8 @@
   var yt = $("#yt");
   if (yt) {
     $("button", yt).addEventListener("click", function () {
-      yt.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + CONFIG.youtubeId +
-        '?autoplay=1&rel=0" title="Video Program Cuti Sekolah AMPAC" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+      yt.innerHTML = '<iframe src="https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(CONFIG.mainVideo) +
+        '&show_text=false&autoplay=true&width=1280" title="Testimoni utama Program Cuti Sekolah AMPAC" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>';
     });
   }
 
