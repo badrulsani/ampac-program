@@ -461,4 +461,6 @@ footer img{height:64px;width:auto;margin:0 auto 18px}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .rv{opacity:1;transform:none}
   .rail{flex-wrap:wrap;width:auto}
+  /* Tukar gaya pakej tetap berlaku, cuma dengan fade ringkas */
+  .pricing,.pricing .plan,.pricing .early,.pricing .cd div,.pricing .age-toggle div,.pricing .pill-bg,.pricing .plan .btn{transition:background-color .4s,background .4s,color .4s,box-shadow .4s!important}
 }
