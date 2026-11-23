@@ -308,6 +308,78 @@ section{padding:100px 0;position:relative}
 .cd span{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ffe3e4}
 .cd-label{grid-column:1/-1;text-align:center;font-weight:700;font-size:14px;color:#ffe3e4;margin-bottom:2px}
 
+/* ===== Pakej: mod Kanak-Kanak (claymorphism) & Remaja (glassmorphism) ===== */
+.pricing{transition:background-color .7s var(--ease),color .7s var(--ease)}
+.pricing::before{transition:opacity .7s}
+.pricing .wrap{z-index:1}
+.pr-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.pr-bg span{position:absolute;border-radius:50%;transition:background .8s var(--ease),filter .8s var(--ease),opacity .8s var(--ease),box-shadow .8s var(--ease)}
+.pb1{width:340px;height:340px;top:-90px;left:-110px}
+.pb2{width:260px;height:260px;top:40%;right:-80px}
+.pb3{width:300px;height:300px;bottom:-110px;left:18%}
+.pricing .plan,.pricing .early,.pricing .cd div,.pricing .age-toggle div,.pricing .pill-bg,.pricing .code span,.pricing .ribbon,.pricing .plan .btn{transition:opacity .8s var(--ease),transform .8s var(--ease),background .6s var(--ease),box-shadow .6s var(--ease),color .6s var(--ease),border-color .6s var(--ease),border-radius .6s var(--ease)}
+.pricing h2,.pricing .anchor,.pricing .anchor-after,.pricing .plan .name,.pricing .plan .meal,.pricing .plan li,.pricing .early p,.pricing .cd span,.pricing .cd-label{transition:color .6s var(--ease)}
+@keyframes clayBounce{0%{transform:scale(.6) translateY(20px);opacity:0}60%{transform:scale(1.12) translateY(-6px);opacity:1}80%{transform:scale(.96)}100%{transform:none}}
+@keyframes glassIn{0%{transform:scale(1.25);opacity:0;filter:blur(8px)}100%{transform:none;opacity:1;filter:none}}
+.age-logo img.in-kids{animation:clayBounce .75s var(--ease)}
+.age-logo img.in-teen{animation:glassIn .6s var(--ease)}
+
+/* --- KANAK-KANAK: CLAY --- */
+.pricing.mode-kids{background-color:#ffe9dc;color:#3a2230}
+.mode-kids::before{opacity:0}
+.mode-kids .pb1{background:#ffd2c0;box-shadow:inset 18px 18px 36px rgba(255,255,255,.6),inset -20px -20px 40px rgba(230,140,120,.35);animation:floaty 7s ease-in-out infinite}
+.mode-kids .pb2{background:#ffe08a;box-shadow:inset 16px 16px 30px rgba(255,255,255,.6),inset -18px -18px 34px rgba(210,150,20,.3);animation:floaty 6s ease-in-out infinite -2s}
+.mode-kids .pb3{background:#ffc6b8;box-shadow:inset 16px 16px 30px rgba(255,255,255,.55),inset -18px -18px 34px rgba(230,120,100,.3);animation:floaty 8s ease-in-out infinite -4s;opacity:.8}
+.mode-kids .eyebrow{color:var(--red)!important}
+.mode-kids h2{color:#3a2230}
+.mode-kids .anchor{color:#c4a196}
+.mode-kids .anchor-after{color:#d9480f}
+.mode-kids h2,.mode-kids .plan .price,.mode-kids .plan .name,.mode-kids .ribbon,.mode-kids .early h3,.mode-kids .cd b{font-family:"Fredoka","Plus Jakarta Sans",sans-serif}
+.mode-kids .fomo{box-shadow:inset 3px 3px 6px rgba(255,255,255,.6),inset -4px -4px 8px rgba(200,130,0,.3),0 12px 24px rgba(214,120,100,.3)}
+.mode-kids .age-toggle div{background:#fff6f0;border-color:transparent;box-shadow:inset 4px 4px 8px rgba(255,255,255,.95),inset -5px -5px 10px rgba(234,160,140,.35),0 12px 24px rgba(214,120,100,.22)}
+.mode-kids .age-toggle button{color:#8a6070}
+.mode-kids .age-toggle button[aria-pressed="true"]{color:#fff}
+.mode-kids .pill-bg{background:#ff5a4e;box-shadow:inset 3px 3px 6px rgba(255,255,255,.45),inset -4px -4px 8px rgba(160,30,20,.35)}
+.mode-kids .plan{background:#fff6f0;color:#3a2230;border-radius:36px;box-shadow:inset 8px 8px 16px rgba(255,255,255,.95),inset -10px -10px 22px rgba(234,160,140,.32),0 22px 40px rgba(214,120,100,.28)}
+.mode-kids .plan .name{color:#a07a86}
+.mode-kids .plan .price{font-weight:700}
+.mode-kids .plan .meal{color:#e8483c}
+.mode-kids .plan li.plus{color:#d23a2e}
+.mode-kids .plan.best{background:#fff3d4;box-shadow:inset 8px 8px 16px rgba(255,255,255,.95),inset -10px -10px 22px rgba(225,170,40,.35),0 0 0 4px #ffc93c,0 26px 46px rgba(214,140,60,.35)}
+.mode-kids .ribbon{border-radius:16px!important;box-shadow:inset 3px 3px 6px rgba(255,255,255,.5),inset -4px -4px 8px rgba(0,0,0,.18),0 8px 16px rgba(214,120,100,.3)}
+.mode-kids .plan .btn{background:#ff5a4e;border-radius:22px;box-shadow:inset 4px 4px 8px rgba(255,255,255,.45),inset -5px -5px 10px rgba(160,30,20,.35),0 12px 22px rgba(255,90,78,.35)}
+.mode-kids .plan .btn.gold{background:#ffc93c;color:#3a2230;box-shadow:inset 4px 4px 8px rgba(255,255,255,.55),inset -5px -5px 10px rgba(200,120,0,.35),0 12px 22px rgba(255,180,40,.35)}
+.mode-kids .plan .btn::after{display:none}
+.mode-kids .early{background:#ff7a5c;border-radius:36px;box-shadow:inset 10px 10px 20px rgba(255,255,255,.3),inset -12px -12px 24px rgba(180,50,30,.35),0 24px 44px rgba(214,100,80,.35)}
+.mode-kids .early::before{background:rgba(255,255,255,.18)}
+.mode-kids .early p{color:#fff}
+.mode-kids .early h3{color:#fff;text-shadow:0 2px 0 rgba(160,40,20,.25)}
+.mode-kids .code span{border-radius:18px;border-color:#d23a2e;color:#d23a2e}
+.mode-kids .code button{border-radius:16px;background:#3a2230}
+.mode-kids .cd div{background:#fff6f0;color:#3a2230;border-radius:20px;box-shadow:inset 4px 4px 8px rgba(255,255,255,.95),inset -5px -5px 10px rgba(234,160,140,.35)}
+.mode-kids .cd span{color:#a07a86}
+
+/* --- REMAJA: GLASS --- */
+.pricing.mode-teen{background-color:#120b1f;color:#fff}
+.mode-teen .pr-bg span{filter:blur(70px);opacity:.6;animation:blob 10s ease-in-out infinite}
+.mode-teen .pb1{background:#e3262e}
+.mode-teen .pb2{background:#ffb020;animation-delay:-3s}
+.mode-teen .pb3{background:#7b5cff;animation-delay:-6s}
+.mode-teen .age-toggle div{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.mode-teen .plan{background:rgba(255,255,255,.09);color:#fff;border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 24px 50px rgba(0,0,0,.35)}
+.mode-teen .plan .name{color:rgba(255,255,255,.7)}
+.mode-teen .plan .meal{color:#ffb4a8}
+.mode-teen .plan li svg{color:#5be39a}
+.mode-teen .plan li.plus{color:#ffd0c8}
+.mode-teen .plan li.plus svg{color:#ff8a7b}
+.mode-teen .plan.best{background:rgba(255,194,61,.12);border-color:rgba(255,194,61,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 40px rgba(255,194,61,.25),0 30px 60px rgba(0,0,0,.4)}
+.mode-teen .early{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.mode-teen .early::before{background:radial-gradient(circle,rgba(227,38,46,.5),transparent 70%)}
+.mode-teen .early p{color:rgba(255,255,255,.82)}
+.mode-teen .code span{background:rgba(255,255,255,.92)}
+.mode-teen .cd div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}
+.mode-teen .cd span,.mode-teen .cd-label{color:rgba(255,255,255,.75)}
+
 /* FAQ */
 .faq{background:var(--cream)}
 .faq .wrap{max-width:840px}
@@ -381,7 +453,7 @@ footer img{height:64px;width:auto;margin:0 auto 18px}
   .age-toggle button{padding:10px 14px;font-size:14px}
   .fomo{font-size:14px;padding:12px 18px;border-radius:20px}
   .bonus-box{flex-direction:column;align-items:flex-start}
-  .anchor{font-size:clamp(22px,7vw,40px);gap:12px}
+  .anchor{font-size:clamp(20px,6.2vw,40px);gap:10px}
   .code span{font-size:18px}
   .nav .cta{padding:9px 16px}
 }

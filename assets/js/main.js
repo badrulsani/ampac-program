@@ -147,12 +147,16 @@
     pill.style.transform = "translateX(" + (btn.offsetLeft - 6) + "px)";
     var teen = btn.getAttribute("data-age") === "teen";
     $$(".reg").forEach(function (a) { a.href = teen ? CONFIG.links.teen : CONFIG.links.kids; });
+    pricing.classList.toggle("mode-teen", teen);
+    pricing.classList.toggle("mode-kids", !teen);
     var src = img(teen ? "logo-superhero" : "logo-superstar");
     if (logo.getAttribute("src") !== src) {
       logo.classList.add("fade");
       setTimeout(function () {
         logo.src = src; logo.alt = teen ? "Superhero Ummah" : "Superstar Ummah";
-        logo.classList.remove("fade");
+        logo.classList.remove("fade", "in-kids", "in-teen");
+        void logo.offsetWidth;
+        logo.classList.add(teen ? "in-teen" : "in-kids");
       }, 250);
     }
   }
