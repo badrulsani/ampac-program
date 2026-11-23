@@ -262,17 +262,24 @@ section{padding:100px 0;position:relative}
 .anchor-after{text-align:center;font-weight:700;color:var(--gold);font-size:18px;opacity:0;transform:translateY(10px);transition:all .6s 1.8s var(--ease)}
 .anchor.in + .anchor-after{opacity:1;transform:none}
 
-.age-toggle{display:flex;justify-content:center;margin:46px 0 30px}
+.age-toggle{display:flex;justify-content:center;margin:30px 0 30px}
 .age-toggle div{display:inline-flex;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:6px;position:relative}
 .age-toggle button{position:relative;z-index:1;padding:12px 22px;border-radius:999px;font-weight:800;font-size:15px;color:#cfc6d8;transition:color .3s}
 .age-toggle button small{display:block;font-weight:600;font-size:12px;opacity:.8}
 .age-toggle button[aria-pressed="true"]{color:var(--ink)}
 .age-toggle .pill-bg{position:absolute;top:6px;bottom:6px;left:6px;border-radius:999px;background:var(--gold);transition:transform .4s var(--ease),width .4s var(--ease)}
 .age-logo{display:flex;justify-content:center;margin-bottom:26px}
+.fomo-wrap{margin-top:34px}
+.fomo{display:inline-flex;align-items:center;gap:12px;max-width:100%;background:linear-gradient(90deg,var(--gold),#ffd978,var(--gold));background-size:200% 100%;color:var(--ink);text-decoration:none;font-size:16px;padding:14px 24px;border-radius:999px;box-shadow:0 0 0 0 rgba(255,194,61,.55);animation:fomoGlow 2.2s ease-in-out infinite,fomoShine 3s linear infinite;text-align:left;line-height:1.35}
+.fomo strong{font-weight:800;letter-spacing:.02em}
+.fomo .dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(227,38,46,.7);animation:pulseDot 1.4s infinite}
+@keyframes fomoGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,194,61,.5)}50%{box-shadow:0 0 0 12px rgba(255,194,61,0)}}
+@keyframes fomoShine{to{background-position:-200% 0}}
+@keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(227,38,46,.7)}70%{box-shadow:0 0 0 10px rgba(227,38,46,0)}100%{box-shadow:0 0 0 0 rgba(227,38,46,0)}}
 .age-logo img{height:86px;width:auto;transition:opacity .3s,transform .4s var(--ease)}
 .age-logo img.fade{opacity:0;transform:scale(.9)}
 
-.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.plans{scroll-margin-top:90px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
 .plan{background:#fff;color:var(--ink);border-radius:28px;padding:32px 28px;display:flex;flex-direction:column;position:relative}
 .plan .name{font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:14px;color:var(--muted)}
 .plan .price{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:58px;line-height:1;margin:12px 0 4px}
@@ -372,6 +379,7 @@ footer img{height:64px;width:auto;margin:0 auto 18px}
   .badge-float.a{display:none}
   .badge-float.b{right:0}
   .age-toggle button{padding:10px 14px;font-size:14px}
+  .fomo{font-size:14px;padding:12px 18px;border-radius:20px}
   .bonus-box{flex-direction:column;align-items:flex-start}
   .anchor{font-size:clamp(22px,7vw,40px);gap:12px}
   .code span{font-size:18px}
