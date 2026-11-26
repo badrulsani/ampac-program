@@ -245,10 +245,15 @@ p{color:var(--muted)}
 .research-details{margin-top:22px}
 .research-details>summary{font-size:13px;font-weight:700;cursor:pointer;color:#555}
 .research-details[open]>summary{margin-bottom:22px}
-#references-list{display:grid;grid-template-columns:1fr 1fr;gap:12px 44px}
-#references-list a{font-size:12px;border-bottom:1px solid #ddd;padding-bottom:11px}
-#references-list a:hover{color:var(--red)}
-#references-list span{display:block;font-size:10px;color:#85888e}
+#references-list{display:grid;grid-template-columns:1fr;gap:0}
+.ref{display:grid;grid-template-columns:44px 1fr auto;gap:16px;padding:20px 0;border-bottom:1px solid #ddd;align-items:start}
+.ref-no{font-size:13px;font-weight:800;color:var(--red);padding-top:2px}
+.ref-title{font-size:15px;font-weight:700;line-height:1.4;border-bottom:1px solid #ccc}
+.ref-title:hover{color:var(--red);border-color:var(--red)}
+.ref-meta{display:block;font-size:11px;color:#85888e;margin:6px 0 10px}
+.ref p{font-size:13.5px;line-height:1.75;margin-top:4px}
+.ref p b{color:var(--ink)}
+.ref-step{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;background:#fff;border:1px solid var(--line);border-radius:99px;padding:3px 10px;color:var(--red);white-space:nowrap}
 
 /* daftar */
 .contact{background:linear-gradient(90deg,#17171bf5,#17171bed),url('assets/team-momentum.webp') center/cover;color:#fff}
@@ -313,7 +318,8 @@ dialog::backdrop{background:#000c;backdrop-filter:blur(4px)}
  .trainer-photo img{height:440px}
  .trainer-nameplate{right:0}
  .footer-main{grid-template-columns:1fr;gap:28px}
- #references-list{grid-template-columns:1fr}
+ .ref{grid-template-columns:32px 1fr}
+ .ref-step{grid-column:2;justify-self:start}
  .research-heading{flex-direction:column;align-items:flex-start}
  .reference-count{text-align:left}
  .menu-toggle{display:block;margin-left:auto}
