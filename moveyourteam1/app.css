@@ -295,3 +295,37 @@ dialog .row{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
  .print-head img{height:40px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ===== 5.0 Ringkas ===== */
+.pills{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.pill{border-radius:10px;padding:8px 10px;background:#eceae4;display:flex;flex-direction:column;gap:1px;font-size:13px}
+.pill small{font-size:11px;color:var(--muted);font-weight:700}
+.pill b{font-size:13.5px}
+.pill.ok{background:#e3f3ea}.pill.ok b{color:var(--ok)}
+.pill.mid{background:#fff3d6}.pill.mid b{color:#7a5200}
+.pill.low{background:#fbdfe3}.pill.low b{color:#a4152a}
+.pill.na{background:repeating-linear-gradient(45deg,#eceae4 0 6px,#f6f4ef 6px 12px)}
+.tip{background:#fbf6ea;border-radius:10px;padding:10px 14px;font-size:13.5px;margin-bottom:12px}
+#skrip{min-height:260px;font-size:14.5px;line-height:1.6}
+.ai-row{margin-top:16px;border-top:1px dashed #d8d6cf;padding-top:14px;font-size:13.5px}
+.plan-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.plan-head span{font-size:13.5px;color:var(--muted)}
+.task-head{display:grid;grid-template-columns:34px minmax(0,2.4fr) minmax(0,1.2fr) 150px 34px;gap:10px;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);padding:0 12px 6px}
+.task{grid-template-columns:34px minmax(0,2.4fr) minmax(0,1.2fr) 150px 34px;align-items:start}
+.task .bk{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.status-cards{grid-template-columns:repeat(3,1fr)}
+.sum{display:grid;grid-template-columns:1.2fr 1.4fr .8fr;gap:12px;margin-top:22px}
+.sum-i{background:var(--ink);color:#fff;border-radius:var(--r);padding:16px 18px}
+.sum-i span{display:block;font-size:10px;letter-spacing:1.6px;font-weight:800;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.sum-i b{font-size:15px;line-height:1.4}
+.exports{grid-template-columns:repeat(3,1fr)}
+details.more{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+details.more>summary{cursor:pointer;font-weight:700;font-size:14.5px}
+@media(max-width:980px){
+ .sum,.pills{grid-template-columns:1fr}
+ .task-head{display:none}
+ .task{grid-template-columns:34px minmax(0,1fr) 34px}
+ .task>div:nth-child(3),.task>div:nth-child(4){grid-column:2}
+ .task .del{grid-column:3;grid-row:1}
+ .exports{grid-template-columns:1fr}
+}

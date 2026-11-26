@@ -1,4 +1,4 @@
-MOVE YOUR TEAM PLANNER 4.0 | AMPAC
+MOVE YOUR TEAM PLANNER 5.0 (RINGKAS) | AMPAC
 
 PASANG
 1. Sandarkan folder moveyourteam1 yang sedia ada di hosting.
@@ -8,27 +8,35 @@ PASANG
 4. Fail lama ini tidak lagi digunakan dan boleh dipadam selepas planner baharu disahkan berfungsi:
    move3.css, move3.js, move-core.js, knowledge.js
 5. Hard refresh selepas upload (Ctrl+F5 di Windows, Cmd+Shift+R di Mac).
-6. Semak: pada halaman utama, footer menyebut "Planner 4.0".
+6. Semak: footer menyebut "Planner 5.0".
+
+APA YANG BERUBAH DARIPADA 4.0
+Planner dipermudah untuk sesi 3.5 jam:
+- TNA: 4 soalan isu + 4 semakan pantas (dahulu 5 + 9).
+- PITCH: pilih keputusan dan keutamaan superior. Skrip 2 minit, 5 slaid, 3 soalan bos (dahulu 5 tab).
+- PLAN: pilih status, tarikh mula, nama. 6 langkah disusun (dahulu 11). Hanya tarikh siap, PIC dan tugasan boleh disunting.
+- Pelan Saya: ringkasan, tindakan seterusnya, dan 3 muat turun utama (slaid, kalendar, Word).
+  PDF, Excel dan sandaran berada di bawah "Format lain".
+- AI: satu butang di PITCH untuk menyalin prompt ke ChatGPT atau Claude. Tiada lagi tampal JSON.
 
 DATA PESERTA LAMA
-Planner baharu membaca data planner 3.x yang sudah ada dalam pelayar peserta secara automatik
-(isu, pihak terlibat, contoh, tarikh, status). Teks AI lama disimpan di halaman Pelan Saya.
-Sandaran JSON versi 1, 2 dan 3 boleh dibuka melalui Menu, Buka sandaran.
+Planner baharu membaca data planner 3.x dan 4.0 yang sudah ada dalam pelayar peserta secara automatik.
+Soalan semakan lama (9) dipurata kepada 4. Sandaran JSON versi 1 hingga 5 boleh dibuka melalui
+Menu, Buka sandaran.
 
 CARA IA BERFUNGSI
 - Tiada pelayan, tiada pangkalan data, tiada kunci API. Semua dalam pelayar peserta.
 - Draf TNA, pitch dan pelan dijana oleh enjin MOVE (bukan AI), jadi ia berfungsi tanpa akaun AI.
-- ChatGPT atau Gemini hanya pilihan di setiap langkah untuk menajamkan draf.
-- Hasil: slaid .pptx, dokumen .doc, PDF (cetak), Excel .csv, kalendar .ics, sandaran .json.
+- Hasil: slaid .pptx, kalendar .ics, dokumen Word, serta PDF, Excel .csv dan sandaran .json.
 
 UJI SEBELUM PROGRAM (5 minit, guna telefon DAN laptop)
-1. Tekan "Cuba dengan contoh rekaan".
-2. Buka Pelan Saya. Muat turun slaid, Excel dan kalendar. Buka satu fail setiap jenis.
-3. Pastikan pelan tindakan boleh ditanda siap dan kemajuan berubah.
+1. Tekan "Cuba dengan contoh".
+2. Pergi ke Pelan Saya. Muat turun slaid, kalendar dan Word. Buka satu fail setiap jenis.
+3. Tanda satu tugas siap dan pastikan kemajuan berubah.
 
 PERHATIAN UNTUK PESERTA
 Data disimpan dalam pelayar peranti masing-masing. Galakkan peserta memuat turun slaid dan
-sandaran sebelum meninggalkan dewan. Jadual hanya mengira hari Isnin hingga Jumaat dan tidak
+fail lain sebelum meninggalkan dewan. Jadual hanya mengira hari Isnin hingga Jumaat dan tidak
 mengambil kira cuti umum.
 
 Pustaka slaid: PptxGenJS 3.12.0 (lesen MIT), dalam vendor/pptxgenjs-LICENSE.txt.
