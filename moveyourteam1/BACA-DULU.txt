@@ -14,7 +14,18 @@ APA YANG BERUBAH DARIPADA 5.0
 - Dua bahasa: semua label, hasil dan eksport dalam Bahasa Melayu dengan English kecil dan italik.
   Istilah pelik (Sandaran / Backup, PIC, TNA, dan lain-lain) ada terjemahan dan halaman Istilah.
 - TNA: lima soalan isu dalam tiga skrin pendek, tujuh semakan berasaskan kerangka Gilbert
-  (Behavior Engineering Model). Hasilnya dokumen TNA 10 bahagian dengan rujukan.
+  (Behavior Engineering Model). Hasilnya dokumen TNA dengan rujukan.
+- SINOPSIS TNA (baharu): satu halaman di depan dokumen TNA, sebelum analisis penuh. Tujuh elemen:
+  1) Perlu training? 2) Latihan apa? 3) Kos terlibat 4) Hasil dan cara menilai 5) Kekuatan bukti
+  6) Keputusan diminta 7) Risiko dan andaian utama. Setiap perenggan Melayu disusuli perenggan English.
+- Industri dan bidang latihan (baharu): 13 industri dan 26 bidang latihan. Setiap industri ada enam
+  bidang "Disyorkan". Bidang yang tiada dalam senarai: pilih "Lain-lain" dan tulis sendiri.
+  Senarai ini cadangan AMPAC, bukan piawaian industri.
+- Kos (baharu): angka kos HANYA dikira daripada nombor yang peserta isi sendiri (kes sebulan,
+  minit sekes, kadar sejam, yuran, bilangan peserta, jam). Jika kosong, sinopsis menyatakan
+  "belum dikira" dan apa yang perlu diisi. Tiada angka dianggar sendiri. Andaian pengurangan masalah
+  50% ialah nilai lalai yang ditanda sebagai andaian dan boleh diubah. Angka dalam contoh adalah rekaan.
+- Dual language seluruh dokumen: habiskan perenggan Melayu, kemudian perenggan English (kecil, italik).
 - Rujukan: hanya sumber yang disahkan wujud (Gilbert, Mager & Pipe, Goldstein & Ford, Kirkpatrick,
   Anderson & Krathwohl, Michie et al. COM-B, ATD, CIPD, ROI Institute, Salas et al., Baldwin & Ford,
   Locke & Latham, Gollwitzer & Sheeran). AI dibenarkan merujuk senarai itu sahaja.

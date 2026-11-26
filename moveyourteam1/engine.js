@@ -92,6 +92,54 @@
   const MONTH = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
   const DAYN = ['Ahd', 'Isn', 'Sel', 'Rab', 'Kha', 'Jum', 'Sab'];
 
+  /* ---------- industri dan bidang latihan ---------- */
+  const GRP = { insaniah: B('Kemahiran insaniah', 'Soft skills'), jualan: B('Jualan dan pelanggan', 'Sales and customers'), operasi: B('Operasi dan teknikal', 'Operations and technical'), patuh: B('Pematuhan dan kewangan', 'Compliance and finance'), digital: B('Digital', 'Digital') };
+  const BIDANG = [
+    { id: 'komunikasi', g: 'insaniah', m: 'Komunikasi dan kolaborasi antara jabatan', e: 'Communication and cross-department collaboration' },
+    { id: 'kepimpinan', g: 'insaniah', m: 'Kepimpinan dan coaching', e: 'Leadership and coaching' },
+    { id: 'maklumbalas', g: 'insaniah', m: 'Maklum balas dan pengurusan prestasi', e: 'Feedback and performance management' },
+    { id: 'teambuilding', g: 'insaniah', m: 'Team building dan budaya kerja', e: 'Team building and work culture' },
+    { id: 'konflik', g: 'insaniah', m: 'Pengurusan konflik', e: 'Conflict management' },
+    { id: 'ketahanan', g: 'insaniah', m: 'Ketahanan dan kesejahteraan', e: 'Resilience and wellbeing' },
+    { id: 'masa', g: 'insaniah', m: 'Pengurusan masa dan produktiviti', e: 'Time management and productivity' },
+    { id: 'jualan', g: 'jualan', m: 'Jualan dan penutupan', e: 'Sales and closing' },
+    { id: 'ejen', g: 'jualan', m: 'Perekrutan dan pengekalan ejen', e: 'Agent recruitment and retention' },
+    { id: 'pelanggan', g: 'jualan', m: 'Khidmat dan pengalaman pelanggan', e: 'Customer service and experience' },
+    { id: 'pemasaran', g: 'jualan', m: 'Pemasaran dan jenama', e: 'Marketing and branding' },
+    { id: 'digitalmkt', g: 'jualan', m: 'Pemasaran digital dan kandungan', e: 'Digital marketing and content' },
+    { id: 'rundingan', g: 'jualan', m: 'Rundingan', e: 'Negotiation' },
+    { id: 'produk', g: 'operasi', m: 'Pengetahuan produk dan teknikal', e: 'Product and technical knowledge' },
+    { id: 'proses', g: 'operasi', m: 'Proses, kualiti dan lean', e: 'Process, quality and lean' },
+    { id: 'osh', g: 'operasi', m: 'Keselamatan dan kesihatan pekerjaan', e: 'Occupational safety and health' },
+    { id: 'projek', g: 'operasi', m: 'Pengurusan projek', e: 'Project management' },
+    { id: 'logistik', g: 'operasi', m: 'Logistik dan inventori', e: 'Logistics and inventory' },
+    { id: 'pematuhan', g: 'patuh', m: 'Pematuhan dan etika', e: 'Compliance and ethics' },
+    { id: 'kewangan', g: 'patuh', m: 'Produk kewangan, takaful dan syariah', e: 'Financial, takaful and shariah products' },
+    { id: 'risiko', g: 'patuh', m: 'Pengurusan risiko', e: 'Risk management' },
+    { id: 'buruh', g: 'patuh', m: 'Perundangan buruh dan HR', e: 'Labour law and HR' },
+    { id: 'literasi', g: 'digital', m: 'Literasi digital dan alat kerja', e: 'Digital literacy and work tools' },
+    { id: 'ai', g: 'digital', m: 'AI dan automasi', e: 'AI and automation' },
+    { id: 'data', g: 'digital', m: 'Analitik data', e: 'Data analytics' },
+    { id: 'siber', g: 'digital', m: 'Keselamatan siber', e: 'Cyber security' }
+  ];
+  const INDUSTRI = [
+    { id: 'takaful', m: 'Takaful dan insurans', e: 'Takaful and insurance', top: ['jualan', 'ejen', 'kewangan', 'pelanggan', 'pematuhan', 'kepimpinan'] },
+    { id: 'bank', m: 'Perbankan dan kewangan', e: 'Banking and finance', top: ['kewangan', 'pematuhan', 'risiko', 'pelanggan', 'jualan', 'siber'] },
+    { id: 'runcit', m: 'Runcit dan e-dagang', e: 'Retail and e-commerce', top: ['jualan', 'pelanggan', 'digitalmkt', 'pemasaran', 'logistik', 'produk'] },
+    { id: 'fnb', m: 'F&B dan hospitaliti', e: 'F&B and hospitality', top: ['pelanggan', 'teambuilding', 'osh', 'proses', 'jualan', 'komunikasi'] },
+    { id: 'kilang', m: 'Pembuatan', e: 'Manufacturing', top: ['osh', 'proses', 'produk', 'projek', 'kepimpinan', 'komunikasi'] },
+    { id: 'logistik', m: 'Logistik dan rantaian bekalan', e: 'Logistics and supply chain', top: ['logistik', 'osh', 'proses', 'komunikasi', 'pelanggan', 'projek'] },
+    { id: 'kesihatan', m: 'Kesihatan', e: 'Healthcare', top: ['pelanggan', 'komunikasi', 'osh', 'pematuhan', 'ketahanan', 'teambuilding'] },
+    { id: 'pendidikan', m: 'Pendidikan dan latihan', e: 'Education and training', top: ['komunikasi', 'kepimpinan', 'literasi', 'ai', 'ketahanan', 'maklumbalas'] },
+    { id: 'kerajaan', m: 'Kerajaan dan GLC', e: 'Government and GLC', top: ['kepimpinan', 'komunikasi', 'pelanggan', 'pematuhan', 'projek', 'maklumbalas'] },
+    { id: 'it', m: 'Teknologi dan IT', e: 'Technology and IT', top: ['projek', 'komunikasi', 'siber', 'data', 'ai', 'kepimpinan'] },
+    { id: 'pembinaan', m: 'Pembinaan dan hartanah', e: 'Construction and property', top: ['osh', 'projek', 'jualan', 'rundingan', 'komunikasi', 'pematuhan'] },
+    { id: 'langsung', m: 'Jualan langsung dan agensi', e: 'Direct sales and agencies', top: ['jualan', 'ejen', 'pemasaran', 'digitalmkt', 'kepimpinan', 'rundingan'] },
+    { id: 'lain', m: 'Lain-lain', e: 'Other', top: ['komunikasi', 'kepimpinan', 'pelanggan', 'jualan', 'teambuilding', 'maklumbalas'] }
+  ];
+  const bidangOf = S => S.bidang === 'lain' ? (S.bidangLain.trim() ? { m: S.bidangLain.trim(), e: S.bidangLain.trim(), custom: true } : null) : (BIDANG.find(b => b.id === S.bidang) || null);
+  const industriOf = S => INDUSTRI.find(i => i.id === S.industri) || null;
+
   /* ---------- utiliti ---------- */
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const has = x => typeof x === 'string' && x.trim().length > 0;
@@ -119,6 +167,7 @@
       v: 6, ex: false, isu: '', kesan: '', pihak: '', standard: '', contoh: '',
       diag: { info: null, sumber: null, insentif: null, tahu: null, mampu: null, motif: null, bukti: null },
       tnaAI: '', minta: [], penting: '', kos: '', status: 'belum', mula: '', nama: '',
+      industri: '', bidang: '', bidangLain: '', kes: '', minit: '', kadar: '', yuran: '', peserta: '', jam: '', kurang: '',
       tasks: null, tasksSig: '', skripEdit: '', lama: null
     };
   }
@@ -141,6 +190,8 @@
     for (const k of ['isu', 'kesan', 'pihak', 'standard', 'contoh', 'skripEdit']) d[k] = clampStr(o[k], 12000);
     if (ver < 6) { d.standard = clampStr(o.hasil, 12000); }
     d.tnaAI = clampStr(o.tnaAI, 40000); d.ex = o.ex === true;
+    d.industri = INDUSTRI.some(i => i.id === o.industri) ? o.industri : ''; d.bidang = o.bidang === 'lain' || BIDANG.some(b => b.id === o.bidang) ? o.bidang : '';
+    d.bidangLain = clampStr(o.bidangLain, 200); for (const k of ['kes', 'minit', 'kadar', 'yuran', 'peserta', 'jam', 'kurang']) d[k] = clampStr(typeof o[k] === 'number' ? String(o[k]) : o[k], 20);
     const dg = o.diag && typeof o.diag === 'object' ? o.diag : {};
     if (ver === 6) { for (const k of Object.keys(d.diag)) d.diag[k] = g3(dg[k]); }
     else if (ver === 5) { d.diag = { info: g3(dg.p), sumber: g3(dg.p), insentif: g3(dg.m), tahu: g3(dg.k), mampu: g3(dg.k), motif: g3(dg.m), bukti: g3(dg.b) }; }
@@ -198,6 +249,70 @@
     const D = diagnose(S), ps = D.unknown.map(q => q.c);
     if (D.evidence.tier !== 'kukuh') ps.push(B('Kumpul 5 hingga 10 contoh kejadian dan data sedia ada (kekerapan dan kesan).', 'Collect 5 to 10 incident examples and existing data (frequency and impact).'));
     return { fit: D.fit, keputusanTajuk: D.title, dapatan: D.text, intervensi: D.interventions, perluSahkan: ps.slice(0, 4), bukti: D.evidence, fac: D.fac };
+  }
+
+  /* ---------- kos: hanya daripada angka peserta ---------- */
+  const num = x => { const n = parseFloat(String(x ?? '').replace(/[, ]/g, '')); return isFinite(n) && n > 0 ? n : null; };
+  const rm = n => 'RM' + Math.round(n).toLocaleString('en-US');
+  function kosSummary(S) {
+    const kes = num(S.kes), mnt = num(S.minit), kad = num(S.kadar), yur = num(S.yuran), pes = num(S.peserta), jam = num(S.jam) || 3.5, kurDef = !num(S.kurang), kur = num(S.kurang) || 50;
+    const prob = kes && mnt && kad ? kes * 12 * (mnt / 60) * kad : null;
+    const staff = pes && kad ? pes * jam * kad : null;
+    const sol = yur !== null || staff !== null ? (yur || 0) + (staff || 0) : null;
+    const saving = prob !== null ? prob * kur / 100 : null;
+    const payback = sol !== null && saving > 0 ? sol / (saving / 12) : null;
+    const rows = [];
+    if (prob !== null) rows.push([B('Kos masalah sekarang', 'Cost of the problem now'), B(rm(prob) + ' setahun', rm(prob) + ' a year'), B(kes + ' kes sebulan × ' + mnt + ' minit × ' + rm(kad) + ' sejam', kes + ' cases a month × ' + mnt + ' minutes × ' + rm(kad) + ' an hour')]);
+    if (sol !== null) rows.push([B('Kos penyelesaian', 'Cost of the solution'), B(rm(sol), rm(sol)), B((yur ? 'Yuran dan bahan ' + rm(yur) : 'Yuran belum diisi') + (staff !== null ? ' + masa staf ' + pes + ' × ' + jam + ' jam × ' + rm(kad) : ' (masa staf belum dikira)'), (yur ? 'Fees and materials ' + rm(yur) : 'Fees not filled in') + (staff !== null ? ' + staff time ' + pes + ' × ' + jam + ' hours × ' + rm(kad) : ' (staff time not yet calculated)'))]);
+    if (saving !== null && sol !== null) rows.push([B('Penjimatan dianggar setahun', 'Estimated saving a year'), B(rm(saving), rm(saving)), B('Andaian masalah berkurang ' + kur + '%' + (kurDef ? ' (andaian lalai, belum disahkan)' : ' (andaian anda)'), 'Assuming the problem reduces by ' + kur + '%' + (kurDef ? ' (default assumption, unverified)' : ' (your assumption)'))]);
+    if (payback !== null) { const pm = payback < 3 ? payback.toFixed(1) : String(Math.round(payback)); rows.push([B('Tempoh balik modal', 'Payback period'), B('kira-kira ' + pm + ' bulan', 'about ' + pm + ' months'), B('Kos penyelesaian dibahagi penjimatan sebulan', 'Cost of the solution divided by the monthly saving')]); }
+    const complete = prob !== null && sol !== null;
+    const note = B('Semua angka ialah anggaran berdasarkan input anda dan belum disahkan. Pengurangan masalah ialah andaian.', 'All figures are estimates based on your input and have not been verified. The reduction in the problem is an assumption.');
+    let ringkas;
+    if (complete) { const pm = payback !== null ? (payback < 3 ? payback.toFixed(1) : String(Math.round(payback))) : null; ringkas = B('Kos penyelesaian ' + rm(sol) + '; kos masalah ' + rm(prob) + ' setahun' + (pm ? '; balik modal kira-kira ' + pm + ' bulan' : '') + '.', 'Solution cost ' + rm(sol) + '; problem cost ' + rm(prob) + ' a year' + (pm ? '; payback in about ' + pm + ' months' : '') + '.'); }
+    else if (sol !== null) ringkas = B('Kos penyelesaian ' + rm(sol) + '; kos masalah belum dikira.', 'Solution cost ' + rm(sol) + '; cost of the problem not yet calculated.');
+    else if (has(S.kos)) ringkas = B(S.kos.trim(), S.kos.trim());
+    else ringkas = B('Belum dikira. Isi angka kos di langkah TNA dan PITCH.', 'Not yet calculated. Fill in the cost figures in the TNA and PITCH steps.');
+    return { prob, sol, saving, payback, complete, rows, note, ringkas, any: prob !== null || sol !== null };
+  }
+
+  /* ---------- sinopsis: satu muka surat, perenggan BM kemudian perenggan EN ---------- */
+  function synopsis(S) {
+    const D = diagnose(S), T = tna(S), PL = plan(S), K = kosSummary(S), bd = bidangOf(S), ind = industriOf(S), isTrain = train(D);
+    const fmt = { latihan: B('bengkel praktikal dengan amalan dan maklum balas, disusuli semakan oleh superior', 'a practical workshop with practice and feedback, followed by superior review'), campuran: B('bengkel praktikal dengan amalan dan maklum balas, bersama pembaikan persekitaran kerja', 'a practical workshop with practice and feedback, together with fixes to the work environment'), persekitaran: B('tiada latihan kemahiran buat masa ini; tindakan utama ialah membaiki persekitaran kerja', 'no skills training for now; the main action is to fix the work environment'), individu: B('coaching 1-ke-1 dan pelarasan tugas, bukan kursus kemahiran', 'one-to-one coaching and adjusting duties, not a skills course') }[D.fit] || B('belum dapat ditentukan; sahkan maklumat dahulu', 'cannot be determined yet; verify the information first');
+    const support = D.nonTraining.length ? { m: D.nonTraining.map(q => q.lab.m.toLowerCase()).join(' dan '), e: D.nonTraining.map(q => q.lab.e.toLowerCase()).join(' and ') } : null;
+    const bm = [], be = [];
+    const sec = [];
+    sec.push({ h: B('1. Perlu training?', '1. Is training needed?'), paras: [B(D.title.m + ' ' + D.text.m, D.title.e + ' ' + D.text.e)] });
+    let tm, te;
+    if (isTrain) {
+      tm = 'Bidang: ' + (bd ? bd.m : 'belum dipilih') + '. Format: ' + fmt.m + '. Sasaran: ' + trim(val(S.pihak, 'belum diisi')) + '.' + (support ? ' Sokongan wajib: pembaikan ' + support.m + '.' : '');
+      te = 'Area: ' + (bd ? bd.e : 'not yet chosen') + '. Format: ' + fmt.e + '. Target group: ' + trim(val(S.pihak, 'not filled in')) + '.' + (support ? ' Required support: fixing ' + support.e + '.' : '');
+    } else {
+      tm = 'Tiada latihan kemahiran sebagai tindakan utama buat masa ini: ' + fmt.m + '.' + (support ? ' Fokus pembaikan: ' + support.m + '.' : '') + (bd ? ' Jika jurang kemahiran masih ada selepas pembaikan, bidang rujukan ialah ' + bd.m + '.' : '');
+      te = 'No skills training as the main action for now: ' + fmt.e + '.' + (support ? ' Fix focus: ' + support.e + '.' : '') + (bd ? ' If a skills gap remains after the fixes, the reference area is ' + bd.e + '.' : '');
+    }
+    sec.push({ h: B('2. Latihan apa?', '2. What training?'), paras: [B(tm, te)] });
+    if (K.rows.length) sec.push({ h: B('3. Kos terlibat', '3. Costs involved'), cost: K.rows, paras: [K.note] });
+    else sec.push({ h: B('3. Kos terlibat', '3. Costs involved'), paras: [B('Kos belum dikira kerana angka belum diisi. Isi bilangan kes sebulan, masa hilang setiap kes dan kos sejam purata (langkah TNA), serta yuran, bilangan peserta dan jam latihan (langkah PITCH). Planner hanya mengira daripada angka anda dan tidak menganggar sendiri.', 'Costs are not yet calculated because the figures are blank. Fill in cases per month, time lost per case and average cost per hour (TNA step), plus fees, number of participants and training hours (PITCH step). The planner only calculates from your figures and never estimates on its own.')] });
+    sec.push({ h: B('4. Hasil dan cara menilai', '4. Results and how to measure'), paras: [B('Standard yang dimahukan: ' + trim(val(S.standard, 'belum diisi')) + '. Superior menyemak 5 hingga 10 contoh kerja pada minggu 2 dan 4, dan kami membandingkan keadaan sebelum dan selepas (Kirkpatrick tahap 3 dan 4).', 'Desired standard: ' + trim(val(S.standard, 'not filled in')) + '. The superior reviews 5 to 10 work samples in weeks 2 and 4, and we compare before and after (Kirkpatrick levels 3 and 4).')] });
+    sec.push({ h: B('5. Kekuatan bukti', '5. Strength of evidence'), paras: [B(D.evidence.label.m.charAt(0).toUpperCase() + D.evidence.label.m.slice(1) + '. ' + D.evidence.text.m, D.evidence.label.e.charAt(0).toUpperCase() + D.evidence.label.e.slice(1) + '. ' + D.evidence.text.e)] });
+    const kep = S.minta.length ? S.minta.map(k => KEPUTUSAN[k]) : null, mulaT = PL.mula ? fmtD(PL.mula) : null;
+    sec.push({ h: B('6. Keputusan diminta', '6. Decision requested'), paras: [B((kep ? kep.map(x => trim(x.m)).join('; ') : 'Belum dipilih (lihat langkah PITCH)') + '. Tarikh mula: ' + (mulaT || 'belum ditetapkan') + '.', (kep ? kep.map(x => trim(x.e)).join('; ') : 'Not yet chosen (see the PITCH step)') + '. Start date: ' + (mulaT || 'not yet set') + '.')] });
+    const rk = [], re = [];
+    if (D.fit === 'latihan' || D.fit === 'campuran') { rk.push('Latihan tidak akan bertahan tanpa semakan superior di tempat kerja.'); re.push('Training will not last without superior follow-up on the job.'); }
+    if (D.fit === 'campuran' || D.fit === 'persekitaran') { rk.push('Hasil bergantung pada pembaikan persekitaran kerja yang dilaksanakan oleh pemilik proses.'); re.push('Results depend on the work-environment fixes being carried out by the process owner.'); }
+    if (D.fit === 'individu') { rk.push('Coaching bergantung pada kesediaan pekerja dan sokongan superior.'); re.push('Coaching depends on the worker\'s readiness and the superior\'s support.'); }
+    if (D.evidence.tier === 'lemah' || D.evidence.tier === 'belum') { rk.push('Bukti masih lemah, jadi mulakan sebagai percubaan (pilot).'); re.push('Evidence is still weak, so start as a pilot.'); }
+    if (K.any) { rk.push('Anggaran kos ialah angka anda dan belum disahkan.'); re.push('The cost estimate uses your figures and has not been verified.'); }
+    if (!rk.length) { rk.push('Tiada risiko utama dikenal pasti daripada jawapan anda.'); re.push('No major risk was identified from your answers.'); }
+    sec.push({ h: B('7. Risiko dan andaian utama', '7. Main risks and assumptions'), paras: [B(rk.join(' '), re.join(' '))] });
+    return { title: B('Sinopsis TNA', 'TNA Synopsis'), meta: B('Industri: ' + (ind ? ind.m : 'tidak dinyatakan') + '. Isu: ' + trim(cut(S.isu, 140)) + '.', 'Industry: ' + (ind ? ind.e : 'not stated') + '. Issue: ' + trim(cut(S.isu, 140)) + '.'), sections: sec, cost: K, bidang: bd };
+  }
+  function synopsisHTML(S) {
+    const Sy = synopsis(S), costTable = rows => '<table><tbody>' + rows.map(r => '<tr><th>' + bl(r[0]) + '</th><td><b>' + esc(r[1].m) + '</b><br><i class="en">' + esc(r[1].e) + '</i></td><td class="det">' + esc(r[2].m) + '<br><i class="en">' + esc(r[2].e) + '</i></td></tr>').join('') + '</tbody></table>';
+    return '<div class="syn"><h1>' + esc(Sy.title.m) + ' <i class="en">' + esc(Sy.title.e) + '</i></h1><p>' + esc(Sy.meta.m) + '</p><p class="en">' + esc(Sy.meta.e) + '</p>' +
+      Sy.sections.map(s => '<h2>' + esc(s.h.m) + ' <i class="en">' + esc(s.h.e) + '</i></h2>' + (s.cost ? costTable(s.cost) : '') + s.paras.map(p => '<p>' + esc(p.m) + '</p><p class="en">' + esc(p.e) + '</p>').join('')).join('') + '</div>';
   }
 
   /* ---------- dokumen TNA (dua bahasa, bersumber) ---------- */
@@ -315,13 +430,13 @@
     const kep = S.minta.length ? S.minta.map(k => KEPUTUSAN[k]) : [B('(pilih keputusan yang anda mahu minta)', '(choose the decision you want to request)')];
     const mulaT = PL.mula ? fmtD(PL.mula) : null;
     const tip = S.penting ? { m: KEUTAMAAN[S.penting].m + ': ' + FRAMING[S.penting].m, e: KEUTAMAAN[S.penting].e + ': ' + FRAMING[S.penting].e } : B('Pilih apa yang paling dipentingkan oleh superior anda untuk mendapat petua membingkai cadangan.', 'Choose what matters most to your superior to get a tip on framing the proposal.');
-    const kosM = has(S.kos) ? S.kos.trim() : 'belum ditentukan', kosE = has(S.kos) ? S.kos.trim() : 'not yet determined';
+    const KS = kosSummary(S), kosM = KS.ringkas.m, kosE = KS.ringkas.e;
     const top3 = T.intervensi.slice(0, 3);
     const slaid = [
       { tajuk: B('Isu yang kami lihat', 'The issue we see'), poin: [B(cut(S.isu, 150) || 'belum diisi', ''), B('Melibatkan: ' + (cut(S.pihak, 100) || 'belum diisi'), has(S.pihak) ? '' : 'Involves: not filled in'), B('Kesan: ' + (cut(S.kesan, 120) || 'belum diisi'), has(S.kesan) ? '' : 'Impact: not filled in')], nota: B('Mulakan dengan contoh sebenar supaya audiens nampak situasinya.', 'Start with a real example so the audience sees the situation.') },
       { tajuk: B('Apa yang kita tahu dan belum tahu', 'What we know and do not yet know'), poin: [T.keputusanTajuk, B('Kekuatan bukti: ' + D.evidence.label.m, 'Strength of evidence: ' + D.evidence.label.e), T.perluSahkan[0] ? B('Perlu disahkan: ' + cut(T.perluSahkan[0].m, 110), 'To verify: ' + cut(T.perluSahkan[0].e, 110)) : B('Tiada perkara tertunggak.', 'No outstanding items.')], nota: B('Akui batas bukti. Ini membina kredibiliti.', 'Acknowledge the limits of the evidence. It builds credibility.') },
       { tajuk: B('Apa yang dicadangkan', 'What we propose'), poin: top3.map(x => B(cut(x.m, 150), cut(x.e, 150))), nota: B('Tunjukkan bahawa cadangan bukan sekadar latihan, jika analisis menunjukkan begitu.', 'Show that the proposal is not just training, if the analysis says so.') },
-      { tajuk: B('Sumber dan cara mengukur', 'Resources and how we measure'), poin: [B('Kos atau masa: ' + cut(kosM, 100), has(S.kos) ? '' : 'Cost or time: ' + kosE), B('Superior menyemak contoh kerja pada minggu 2 dan 4', 'The superior reviews work samples in weeks 2 and 4'), B('Pelaksana: ' + picName(S, 'hr') + ' dan superior', 'Implemented by: ' + picName(S, 'hr') + ' and the superior')], nota: B('Jangan cipta angka. Jika belum ada, katakan akan dapatkan sebut harga.', 'Do not invent figures. If there are none yet, say you will obtain a quotation.') },
+      { tajuk: B('Sumber dan cara mengukur', 'Resources and how we measure'), poin: [B('Kos: ' + cut(kosM, 120), 'Cost: ' + cut(kosE, 120)), B('Superior menyemak contoh kerja pada minggu 2 dan 4', 'The superior reviews work samples in weeks 2 and 4'), B('Pelaksana: ' + picName(S, 'hr') + ' dan superior', 'Implemented by: ' + picName(S, 'hr') + ' and the superior')], nota: B('Jangan cipta angka. Jika belum ada, katakan akan dapatkan sebut harga.', 'Do not invent figures. If there are none yet, say you will obtain a quotation.') },
       { tajuk: B('Keputusan diminta', 'Decision requested'), poin: kep.map(x => B(cut(x.m, 110), cut(x.e, 110))).concat([B('Mula: ' + (mulaT || 'belum ditetapkan'), 'Start: ' + (mulaT || 'not yet set'))]), nota: B('Tutup dengan permintaan yang khusus, kemudian diam dan tunggu jawapan.', 'Close with a specific request, then stay silent and wait for the answer.') }
     ];
     const cx = has(S.contoh) ? trim(S.contoh) : null, px = has(S.pihak) ? trim(S.pihak) : null;
@@ -340,7 +455,7 @@
       individu: B('Pekerja sudah tahu caranya. Isu ada pada kapasiti atau motif, jadi kami mencadangkan coaching dan penyesuaian tugas.', 'Workers already know how. The issue is capacity or motives, so we propose coaching and adjusting duties.') }[D.fit] || B('Itulah sebabnya kami membentang sebagai langkah pengesahan. Kami belum mendakwa latihan ialah jawapan sebelum punca disahkan.', 'That is why we present this as a validation step. We do not claim training is the answer before the causes are verified.');
     const qa = [
       { s: B('Kenapa perlu latihan? Tak cukupkah dengan arahan sahaja?', 'Why training? Are instructions not enough?'), j: fitQ },
-      { s: B('Berapa kos dan berapa lama?', 'What will it cost and how long will it take?'), j: B('Kos atau masa: ' + (has(S.kos) ? S.kos.trim() : 'belum ditentukan; kami akan dapatkan sebut harga selepas keputusan prinsip') + '.', 'Cost or time: ' + (has(S.kos) ? S.kos.trim() : 'not yet determined; we will obtain a quotation after an in-principle decision') + '.') },
+      { s: B('Berapa kos dan berapa lama?', 'What will it cost and how long will it take?'), j: KS.any || has(S.kos) ? B('Kos: ' + KS.ringkas.m + ' Angka ini anggaran dan belum disahkan.', 'Cost: ' + KS.ringkas.e + ' These figures are estimates and have not been verified.') : B('Kos belum ditentukan; kami akan dapatkan sebut harga selepas keputusan prinsip.', 'Cost is not yet determined; we will obtain a quotation after an in-principle decision.') },
       { s: B('Bagaimana kita tahu ia berjaya?', 'How will we know it worked?'), j: B('Superior menyemak 5 hingga 10 contoh kerja pada minggu 2 dan 4, dan kami membandingkan keadaan sebelum dan selepas.', 'The superior reviews 5 to 10 work samples in weeks 2 and 4, and we compare before and after.') }
     ];
     const out = { tip, slaid, qa, kep, skrip, skripAsal, paras };
@@ -389,9 +504,9 @@
     }).join('');
   }
   function tnaHTML(S) {
-    const d = tnaDoc(S);
-    if (has(S.tnaAI)) return '<h1>1. ' + esc(d.title.m) + ' <i class="en">' + esc(d.title.e) + '</i></h1><p class="aiflag">AI (ChatGPT / Claude)</p>' + md(S.tnaAI);
-    return '<h1>1. ' + esc(d.title.m) + ' <i class="en">' + esc(d.title.e) + '</i></h1>' + d.sections.map((s, i) => '<h2>' + (i + 1) + '. ' + esc(s.h.m) + ' <i class="en">' + esc(s.h.e) + '</i></h2>' + blocksHTML(s.blocks)).join('');
+    const d = tnaDoc(S), head = '<h1 class="pb">' + esc('Analisis penuh') + ' <i class="en">Full analysis</i></h1>';
+    if (has(S.tnaAI)) return synopsisHTML(S) + head + '<p class="aiflag">AI (ChatGPT / Claude)</p>' + md(S.tnaAI);
+    return synopsisHTML(S) + head + d.sections.map((s, i) => '<h2>' + (i + 1) + '. ' + esc(s.h.m) + ' <i class="en">' + esc(s.h.e) + '</i></h2>' + blocksHTML(s.blocks)).join('');
   }
 
   /* ---------- eksport ---------- */
@@ -452,7 +567,7 @@
   function summarise(S) {
     const D = diagnose(S);
     return 'Isu: ' + val(S.isu, '-') + '\nKesan kepada organisasi: ' + val(S.kesan, '-') + '\nPihak terlibat: ' + val(S.pihak, '-') + '\nStandard yang dijangka: ' + val(S.standard, '-') + '\nContoh kejadian (kekerapan, rekod): ' + val(S.contoh, '-') + '\n' +
-      'Penilaian enam faktor (2=kukuh, 1=separa, 0=jurang, tiada=tak pasti): ' + D.fac.map(f => f.q.lab.e + '=' + (f.v === null ? 'tak pasti' : f.v)).join('; ') + '\nKekuatan bukti: ' + D.evidence.label.m + '\nKeputusan awal enjin: ' + D.title.m + '\n' + (S.ex ? 'Nota: ini contoh rekaan.\n' : '');
+      (industriOf(S) ? 'Industri: ' + industriOf(S).m + '\n' : '') + (bidangOf(S) ? 'Bidang latihan dipilih peserta: ' + bidangOf(S).m + '\n' : '') + (kosSummary(S).any ? 'Anggaran kos (daripada angka peserta): ' + kosSummary(S).ringkas.m + '\n' : '') + 'Penilaian enam faktor (2=kukuh, 1=separa, 0=jurang, tiada=tak pasti): ' + D.fac.map(f => f.q.lab.e + '=' + (f.v === null ? 'tak pasti' : f.v)).join('; ') + '\nKekuatan bukti: ' + D.evidence.label.m + '\nKeputusan awal enjin: ' + D.title.m + '\n' + (S.ex ? 'Nota: ini contoh rekaan.\n' : '');
   }
   function aiTnaPrompt(S) {
     return 'Anda ialah perunding Training Needs Analysis (TNA) untuk pegawai HR di Malaysia. Tulis dokumen TNA yang padat, praktikal dan sesuai ditunjukkan kepada pengurusan, berdasarkan maklumat pengguna di bawah.\n\n' +
@@ -475,12 +590,13 @@
       standard: 'Setiap serahan menyatakan hasil, PIC dan tarikh siap, dan penerima mengesahkan kefahaman.',
       contoh: 'Dalam contoh rekaan ini, permintaan semakan stok tidak menyebut tarikh siap, jadi Operations perlu bertanya sebelum bertindak. Berlaku beberapa kali seminggu, dan ada e-mel sebagai rekod.',
       diag: { info: 1, sumber: 0, insentif: 2, tahu: 1, mampu: 2, motif: 2, bukti: 2 },
-      minta: ['lulus', 'masa'], penting: 'produktiviti', kos: 'Satu sesi 3.5 jam dan 15 minit semakan mingguan oleh superior', status: 'belum'
+      minta: ['lulus', 'masa'], penting: 'produktiviti', kos: '', status: 'belum',
+      industri: 'runcit', bidang: 'komunikasi', kes: '130', minit: '20', kadar: '40', yuran: '4820', peserta: '20', jam: '3.5', kurang: '50'
     });
     return d;
   }
 
-  const api = { KEY, OLD_KEYS, B, REFS, DISCLAIMER, ADAPT, Q, STAT, KEPUTUSAN, KEUTAMAAN, STATUS, FASA, esc, has, cut, dOK, P, F, nextBD, addBD, fmtD, fmtShort, todayISO, defaults, validate, diagnose, tna, tnaDoc, plan, planBase, pitch, parseBi, biText, progress, md, bl, blocksHTML, tnaHTML, pitchHTML, checklistHTML, docBody, DOC_CSS, toCSV, toICS, toDoc, aiTnaPrompt, aiScriptPrompt, exampleData, uid, fasaT, train };
+  const api = { KEY, OLD_KEYS, B, REFS, DISCLAIMER, ADAPT, Q, STAT, KEPUTUSAN, KEUTAMAAN, STATUS, FASA, esc, has, cut, dOK, P, F, nextBD, addBD, fmtD, fmtShort, todayISO, defaults, validate, diagnose, tna, tnaDoc, plan, planBase, pitch, parseBi, biText, progress, md, bl, blocksHTML, tnaHTML, pitchHTML, checklistHTML, docBody, DOC_CSS, toCSV, toICS, toDoc, aiTnaPrompt, aiScriptPrompt, exampleData, uid, fasaT, train, GRP, BIDANG, INDUSTRI, bidangOf, industriOf, kosSummary, synopsis, synopsisHTML, num, rm };
   if (typeof module !== 'undefined') module.exports = api;
   root.Move = api;
 })(typeof window !== 'undefined' ? window : globalThis);

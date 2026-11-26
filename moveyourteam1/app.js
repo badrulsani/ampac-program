@@ -46,6 +46,20 @@ const li = a => '<ul>' + a.map(x => '<li>' + bx(x) + '</li>').join('') + '</ul>'
 function ftext(k, lab, hint, ex, rows = 3) {
   return `<div class="field"><label for="${k}">${bi(lab[0], lab[1])}</label><span class="hint" id="${k}-h">${bi(hint[0], hint[1])}</span><textarea id="${k}" data-f="${k}" maxlength="8000" rows="${rows}" aria-describedby="${k}-h">${esc(S[k])}</textarea>${ex && !S.ex ? `<div class="ex"><b>Contoh <i class="en">Example</i>:</b> ${esc(ex)}</div>` : ''}</div>`;
 }
+function fnum(k, lab, hint, ph) {
+  return `<div class="field"><label for="${k}">${bi(lab[0], lab[1])}</label><span class="hint" id="${k}-h">${bi(hint[0], hint[1])}</span><input type="text" inputmode="decimal" id="${k}" data-f="${k}" maxlength="20" value="${esc(S[k])}" placeholder="${esc(ph || '')}" aria-describedby="${k}-h"></div>`;
+}
+function industriSelect() {
+  return `<div class="field"><label for="industri">${bi('Industri', 'Industry')} <span class="opt">${bi('pilihan', 'optional')}</span></label><span class="hint">${bi('Membantu mencadangkan bidang latihan yang sesuai.', 'Helps suggest suitable training areas.')}</span><select id="industri" data-f="industri"><option value="">Pilih… / Choose…</option>${M.INDUSTRI.map(i => `<option value="${i.id}" ${S.industri === i.id ? 'selected' : ''}>${esc(i.m)} / ${esc(i.e)}</option>`).join('')}</select></div>`;
+}
+function bidangSelect() {
+  const ind = M.industriOf(S), top = ind ? ind.top.map(id => M.BIDANG.find(b => b.id === id)) : [];
+  const opt = b => `<option value="${b.id}" ${S.bidang === b.id ? 'selected' : ''}>${esc(b.m)} / ${esc(b.e)}</option>`;
+  const groups = Object.entries(M.GRP).map(([g, l]) => `<optgroup label="${esc(l.m)} / ${esc(l.e)}">${M.BIDANG.filter(b => b.g === g).map(opt).join('')}</optgroup>`).join('');
+  return `<div class="card"><h2>${bi('Bidang latihan', 'Training area')}</h2><p class="sub">${bib('Jika latihan diperlukan, bidang apa? Pilih satu. Tiada dalam senarai? Pilih "Lain-lain" dan tulis sendiri.', 'If training is needed, what area? Choose one. Not on the list? Choose "Other" and write your own.')}</p>
+    <div class="field"><label for="bidang">${bi('Bidang', 'Area')}</label><select id="bidang" data-f="bidang"><option value="">Pilih… / Choose…</option>${top.length ? `<optgroup label="Disyorkan untuk ${esc(ind.m)} / Recommended for ${esc(ind.e)}">${top.map(opt).join('')}</optgroup>` : ''}${groups}<option value="lain" ${S.bidang === 'lain' ? 'selected' : ''}>Lain-lain (tulis sendiri) / Other (write your own)</option></select></div>
+    ${S.bidang === 'lain' ? `<div class="field"><label for="bidangLain">${bi('Tulis bidang latihan anda', 'Write your training area')}</label><input type="text" id="bidangLain" data-f="bidangLain" maxlength="200" value="${esc(S.bidangLain)}" placeholder="cth. Kemahiran temu duga / e.g. Interviewing skills"></div>` : ''}</div>`;
+}
 function seg(q) {
   const cur = S.diag[q.id], o = [['2', 'Ya', 'Yes'], ['1', 'Sebahagian', 'Partly'], ['0', 'Tidak', 'No'], ['x', 'Tak pasti', 'Not sure']];
   return `<div class="q" role="radiogroup" aria-labelledby="${q.id}-l"><p id="${q.id}-l">${bx(q.t)}</p><small>${bx(q.h)}</small><div class="seg">${o.map(([v, m, e]) => `<label><input type="radio" name="${q.id}" data-d="${q.id}" value="${v}" ${(cur === null && v === 'x') ? 'checked' : String(cur) === v ? 'checked' : ''}><span>${esc(m)}<i class="en blk">${e}</i></span></label>`).join('')}</div></div>`;
@@ -103,14 +117,17 @@ function pageTNA() {
   if (tnaStep === 0) body = `<div class="card"><h2>${bi('Ceritakan isu anda', 'Tell us about the issue')}</h2><p class="sub">${bib('Satu isu sahaja. Mulakan dengan apa yang mengganggu kerja.', 'One issue only. Start with what disrupts the work.')}</p>
       ${ftext('isu', ['Apa masalah yang berlaku?', 'What is the problem?'], ['Apa yang mengganggu kerja.', 'What disrupts the work.'], 'Serahan kerja Sales kepada Operations kerap tidak lengkap.')}
       ${ftext('kesan', ['Apa kesannya kepada organisasi?', 'What is the effect on the organisation?'], ['Kos, masa, pelanggan, atau matlamat (KPI) yang terjejas.', 'Cost, time, customers or goals (KPIs) affected.'], 'Operations kehilangan masa, pesanan pelanggan lambat.', 2)}
-      ${ftext('pihak', ['Siapa yang terlibat?', 'Who is involved?'], ['Peranan, anggaran bilangan dan tahap pengalaman.', 'Roles, approximate number and experience level.'], '12 pegawai Sales dan 8 Operations, kebanyakannya baharu.', 2)}</div>`;
+      ${ftext('pihak', ['Siapa yang terlibat?', 'Who is involved?'], ['Peranan, anggaran bilangan dan tahap pengalaman.', 'Roles, approximate number and experience level.'], '12 pegawai Sales dan 8 Operations, kebanyakannya baharu.', 2)}
+      ${industriSelect()}</div>`;
   if (tnaStep === 1) body = `<div class="card"><h2>${bi('Jurang prestasi', 'Performance gap')}</h2><p class="sub">${bib('Jurang ialah beza antara apa yang sepatutnya berlaku dan apa yang sebenarnya berlaku.', 'A gap is the difference between what should happen and what actually happens.')}</p>
       ${ftext('standard', ['Apa yang sepatutnya berlaku?', 'What should happen?'], ['Standard kerja yang betul.', 'The correct work standard.'], 'Setiap serahan menyebut hasil, PIC dan tarikh siap.')}
-      ${ftext('contoh', ['Apa yang sebenarnya berlaku? Beri satu contoh.', 'What actually happens? Give one example.'], ['Termasuk berapa kerap, dan rekod yang ada.', 'Include how often, and any records.'], 'Permintaan tanpa tarikh siap, beberapa kali seminggu; ada e-mel sebagai rekod.', 4)}</div>`;
+      ${ftext('contoh', ['Apa yang sebenarnya berlaku? Beri satu contoh.', 'What actually happens? Give one example.'], ['Termasuk berapa kerap, dan rekod yang ada.', 'Include how often, and any records.'], 'Permintaan tanpa tarikh siap, beberapa kali seminggu; ada e-mel sebagai rekod.', 4)}</div>
+      <div class="card"><h2>${bi('Berapa kos masalah ini?', 'What does this problem cost?')} <span class="opt">${bi('pilihan', 'optional')}</span></h2><p class="sub">${bib('Planner hanya mengira daripada angka anda dan tidak menganggar sendiri. Biar kosong jika belum tahu.', 'The planner only calculates from your figures and never estimates on its own. Leave blank if unknown.')}</p>
+        <div class="row3">${fnum('kes', ['Kes sebulan', 'Cases a month'], ['Berapa kerap ia berlaku.', 'How often it happens.'], '130')}${fnum('minit', ['Minit hilang setiap kes', 'Minutes lost per case'], ['Masa yang terbuang.', 'Time wasted.'], '20')}${fnum('kadar', ['Kos sejam purata (RM)', 'Average cost per hour (RM)'], ['Gaji dan elaun sejam.', 'Hourly pay and allowances.'], '40')}</div></div>`;
   if (tnaStep === 2) body = `<div class="card"><h2>${bi('Semak punca', 'Check the root cause')}</h2><p class="sub">${bib('Enam faktor daripada Behavior Engineering Model (Gilbert). Faktor persekitaran disemak dahulu.', 'Six factors from the Behavior Engineering Model (Gilbert). Environment factors are checked first.')}</p>
       <div class="dim">${bi('Persekitaran kerja', 'Work environment')}</div>${M.Q.filter(q => q.g === 'E').map(seg).join('')}
       <div class="dim">${bi('Individu', 'Person')}</div>${M.Q.filter(q => q.g === 'P').map(seg).join('')}
-      <div class="dim">${bi('Bukti', 'Evidence')}</div>${M.Q.filter(q => q.g === 'B').map(seg).join('')}</div>`;
+      <div class="dim">${bi('Bukti', 'Evidence')}</div>${M.Q.filter(q => q.g === 'B').map(seg).join('')}</div>${bidangSelect()}`;
   return head + `<div class="cols"><div>${body}<div class="nav-row">${tnaStep ? `<button class="btn" data-sub="${tnaStep - 1}">← ${bi('Kembali', 'Back')}</button>` : `<a class="btn" href="#mula">← ${bi('Utama', 'Home')}</a>`}<button class="btn primary" data-sub="${tnaStep + 1}">${tnaStep === 2 ? bi('Lihat dokumen TNA', 'View TNA document') : bi('Seterusnya', 'Next')} →</button></div></div>
   <aside><div class="sticky"><div class="pv"><div class="pv-head"><i></i>${bi('Keputusan TNA langsung', 'Live TNA result')}</div><div class="pv-body" id="tna-pv">${tnaPreview()}</div></div></div></aside></div></div>`;
 }
@@ -136,7 +153,9 @@ function pagePitch() {
   <div class="cols"><div>
     <div class="card"><h2>${bi('Apa yang anda mahu daripada superior?', 'What do you want from your superior?')}</h2><p class="sub">${bib('Pilih satu atau lebih. Permintaan yang khusus lebih mudah dijawab "ya".', 'Choose one or more. A specific request is easier to answer "yes".')}</p>${chips('minta', M.KEPUTUSAN)}</div>
     <div class="card"><h2>${bi('Apa yang paling dipentingkan oleh superior anda?', 'What matters most to your superior?')}</h2><p class="sub">${bib('Pilih satu. Ia menentukan cara anda membingkai cadangan.', 'Choose one. It shapes how you frame the proposal.')}</p>${chipsOne('penting', M.KEUTAMAAN)}</div>
-    <div class="card"><div class="field" style="margin:0"><label for="kos">${bi('Kos atau masa yang diperlukan', 'Cost or time needed')} <span class="opt">${bi('pilihan', 'optional')}</span></label><span class="hint">${bi('Biar kosong jika belum tahu. Jangan cipta angka.', 'Leave blank if unknown. Do not invent figures.')}</span><input type="text" id="kos" data-f="kos" maxlength="300" value="${esc(S.kos)}" placeholder="cth. satu sesi 3.5 jam / e.g. one 3.5-hour session"></div></div>
+    <div class="card"><h2>${bi('Kos penyelesaian', 'Cost of the solution')} <span class="opt">${bi('pilihan', 'optional')}</span></h2><p class="sub">${bib('Biar kosong jika belum tahu. Planner mengira kos, penjimatan dan tempoh balik modal (payback) daripada angka anda sahaja.', 'Leave blank if unknown. The planner calculates cost, saving and payback period from your figures only.')}</p>
+      <div class="row3">${fnum('yuran', ['Yuran trainer dan bahan (RM)', 'Trainer fees and materials (RM)'], ['Daripada sebut harga anda.', 'From your quotation.'], '4800')}${fnum('peserta', ['Bilangan peserta', 'Number of participants'], ['Yang akan dilatih.', 'Who will be trained.'], '20')}${fnum('jam', ['Jam latihan setiap orang', 'Training hours per person'], ['Lalai 3.5 jam jika kosong.', 'Defaults to 3.5 hours if blank.'], '3.5')}</div>
+      <div class="field" style="max-width:340px;margin-top:6px">${fnum('kurang', ['Andaian masalah berkurang (%)', 'Assumed reduction of the problem (%)'], ['Andaian anda. Lalai 50% jika kosong, belum disahkan.', 'Your assumption. Defaults to 50% if blank, unverified.'], '50')}</div></div>
     <div class="nav-row"><a class="btn" href="#tna">← TNA</a><a class="btn primary" href="#plan">${bi('Seterusnya: CHECKLIST', 'Next: CHECKLIST')} →</a></div>
   </div><aside><div class="sticky"><div class="pv"><div class="pv-head"><i></i>${bi('Pitch langsung', 'Live pitch')}</div><div id="pitch-pv">${pitchPreview()}</div></div></div></aside></div></div>`;
 }
@@ -184,7 +203,7 @@ function pageHasil() {
   return `<div class="wrap"><p class="eyebrow">${bi('Hasil anda', 'Your results')}</p><h1>Pelan Saya. <em>Siap digunakan.</em><span class="enh">My plan. Ready to use.</span></h1>
   <p class="intro">${bib('Ini ringkasan anda. Muat turun tiga fail di bawah, dan mulakan dengan langkah pertama dalam checklist.', 'Here is your summary. Download the three files below, and start with the first step in the checklist.')}</p>
   ${!M.progress(S).tna ? '<div class="warn">' + bib('TNA belum lengkap.', 'The TNA is incomplete.') + ' <a href="#tna">' + bi('Lengkapkan', 'Complete it') + '</a></div>' : ''}
-  <div class="sum"><div class="sum-i"><span>TNA</span><b>${bx(T.keputusanTajuk)}</b></div><div class="sum-i"><span>${bi('Anda minta', 'You request')}</span><b>${PI.kep.map(x => esc(M.cut(x.m, 60))).join('; ')}</b></div><div class="sum-i"><span>${bi('Mula', 'Start')}</span><b>${PL.mula ? esc(M.fmtD(PL.mula)) : bi('belum ditetapkan', 'not set')}</b></div></div>
+  <div class="sum ${M.kosSummary(S).any ? 's4' : ''}"><div class="sum-i"><span>TNA</span><b>${bx(T.keputusanTajuk)}</b></div>${M.kosSummary(S).any ? `<div class="sum-i"><span>${bi('Kos', 'Cost')}</span><b>${bx(M.kosSummary(S).ringkas)}</b></div>` : ''}<div class="sum-i"><span>${bi('Anda minta', 'You request')}</span><b>${PI.kep.map(x => esc(M.cut(x.m, 60))).join('; ')}</b></div><div class="sum-i"><span>${bi('Mula', 'Start')}</span><b>${PL.mula ? esc(M.fmtD(PL.mula)) : bi('belum ditetapkan', 'not set')}</b></div></div>
   <div class="card" style="margin-top:18px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px"><h2>${bi('Langkah seterusnya', 'Next steps')}</h2><b id="pct">${PL.done} / ${PL.total} ${bi('siap', 'done')}</b></div><div class="progress-bar"><i id="pbar" style="width:${PL.pct}%"></i></div><div class="next" id="next" style="margin-top:14px">${nextList()}</div></div>
   <h2 style="margin:26px 0 12px">${bi('Muat turun', 'Download')}</h2>
   <div class="exports">
@@ -215,6 +234,9 @@ const GLOSS = [
   ['Pilot', 'Pilot', 'Percubaan berskala kecil sebelum program penuh.', 'A small-scale trial before a full programme.'],
   ['Coaching', 'Coaching', 'Bimbingan 1-ke-1 untuk membantu seseorang berkembang.', 'One-to-one guidance to help someone improve.'],
   ['Job aid', 'Job aid', 'Panduan ringkas di tempat kerja, contohnya kad atau senarai semak.', 'A short on-the-job guide, such as a card or checklist.'],
+  ['Sinopsis', 'Synopsis', 'Ringkasan satu muka surat di depan dokumen TNA.', 'A one-page summary at the front of the TNA document.'],
+  ['Balik modal', 'Payback period', 'Berapa lama penjimatan menampung kos penyelesaian.', 'How long the savings take to cover the cost of the solution.'],
+  ['Bidang latihan', 'Training area', 'Topik kemahiran yang dilatih, contohnya komunikasi atau jualan.', 'The skill topic being trained, such as communication or sales.'],
   ['Insentif', 'Incentive', 'Kesan atau ganjaran yang mendorong tingkah laku.', 'Consequences or rewards that drive behaviour.']
 ];
 function pageBantuan() {
@@ -304,6 +326,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.d) { S.diag[t.dataset.d] = t.value === 'x' ? null : Number(t.value); save(); refresh(); }
   if (t.dataset.f && (t.type === 'radio' || t.type === 'date')) { S[t.dataset.f] = t.value; save(); refresh(); }
+  if (t.dataset.f === 'bidang') { S.bidang = t.value; save(); render(); }
   if (t.dataset.done) {
     ensureTasks(); const x = S.tasks.find(a => a.id === t.dataset.done); if (x) x.done = t.checked; save();
     if (route() === 'plan') { const row = t.closest('.task'); if (row) row.classList.toggle('done', t.checked); } else updateProgress();
