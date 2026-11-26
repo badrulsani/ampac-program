@@ -1,0 +1,34 @@
+MOVE YOUR TEAM PLANNER 4.0 | AMPAC
+
+PASANG
+1. Sandarkan folder moveyourteam1 yang sedia ada di hosting.
+2. Extract SEMUA kandungan zip ini terus ke folder moveyourteam1.
+   index.html mesti berada terus dalam moveyourteam1, bukan dalam folder bersarang.
+3. Kekalkan folder assets dan vendor. Folder vendor diperlukan untuk muat turun slaid (.pptx).
+4. Fail lama ini tidak lagi digunakan dan boleh dipadam selepas planner baharu disahkan berfungsi:
+   move3.css, move3.js, move-core.js, knowledge.js
+5. Hard refresh selepas upload (Ctrl+F5 di Windows, Cmd+Shift+R di Mac).
+6. Semak: pada halaman utama, footer menyebut "Planner 4.0".
+
+DATA PESERTA LAMA
+Planner baharu membaca data planner 3.x yang sudah ada dalam pelayar peserta secara automatik
+(isu, pihak terlibat, contoh, tarikh, status). Teks AI lama disimpan di halaman Pelan Saya.
+Sandaran JSON versi 1, 2 dan 3 boleh dibuka melalui Menu, Buka sandaran.
+
+CARA IA BERFUNGSI
+- Tiada pelayan, tiada pangkalan data, tiada kunci API. Semua dalam pelayar peserta.
+- Draf TNA, pitch dan pelan dijana oleh enjin MOVE (bukan AI), jadi ia berfungsi tanpa akaun AI.
+- ChatGPT atau Gemini hanya pilihan di setiap langkah untuk menajamkan draf.
+- Hasil: slaid .pptx, dokumen .doc, PDF (cetak), Excel .csv, kalendar .ics, sandaran .json.
+
+UJI SEBELUM PROGRAM (5 minit, guna telefon DAN laptop)
+1. Tekan "Cuba dengan contoh rekaan".
+2. Buka Pelan Saya. Muat turun slaid, Excel dan kalendar. Buka satu fail setiap jenis.
+3. Pastikan pelan tindakan boleh ditanda siap dan kemajuan berubah.
+
+PERHATIAN UNTUK PESERTA
+Data disimpan dalam pelayar peranti masing-masing. Galakkan peserta memuat turun slaid dan
+sandaran sebelum meninggalkan dewan. Jadual hanya mengira hari Isnin hingga Jumaat dan tidak
+mengambil kira cuti umum.
+
+Pustaka slaid: PptxGenJS 3.12.0 (lesen MIT), dalam vendor/pptxgenjs-LICENSE.txt.
