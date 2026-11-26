@@ -57,35 +57,6 @@ function renderCase(id){
 document.querySelectorAll('[data-case]').forEach(b => b.addEventListener('click', () => renderCase(b.dataset.case)));
 renderCase('handover');
 
-/* ---------- rujukan ---------- */
-/* p = prinsip penting daripada sumber; u = bagaimana ia digunakan dalam MOVE YOUR TEAM */
-const REF_NOTES = {
-  cipd:{step:'TNA',p:'Analisis keperluan perlu menghubungkan jurang keupayaan dengan keutamaan organisasi, dan pilihan penyelesaian melangkaui kursus semata-mata.',u:'Sebelum memilih program, peserta mengumpul bukti masalah, standard kerja yang diharapkan dan pandangan pihak terlibat.'},
-  atd:{step:'TNA',p:'Peningkatan prestasi melibatkan analisis punca, proses, persekitaran kerja dan sokongan prestasi.',u:'Pilihan intervensi diluaskan kepada coaching, job aids, penjelasan peranan dan pembaikan proses, bukan latihan sahaja.'},
-  comb:{step:'TNA',p:'Tingkah laku hasil interaksi Capability, Opportunity dan Motivation: kemampuan, peluang atau persekitaran, dan motivasi.',u:'Tiga soalan diagnosis: Dia tahu dan mampu? Keadaan kerja membolehkan? Apa yang mendorong atau menghalang?'},
-  salas:{step:'PLAN',p:'Reka bentuk latihan merangkumi perkara yang berlaku sebelum, semasa dan selepas latihan.',u:'Pelan disusun kepada persediaan peserta, latihan praktikal dan aplikasi di tempat kerja.'},
-  transfer:{step:'PLAN',p:'Pemindahan latihan bergantung pada ciri peserta, reka bentuk latihan dan persekitaran kerja.',u:'Pelan tindakan menyatakan peluang mengamalkan kemahiran, sokongan penyelia dan bukti amalan berterusan.'},
-  goals:{step:'PLAN',p:'Matlamat yang khusus dan mencabar, bersama komitmen dan feedback, menyokong prestasi.',u:'Objektif umum seperti “tingkatkan komunikasi” ditukar kepada perlakuan khusus yang boleh diperhatikan dan disemak.'},
-  intentions:{step:'PLAN',p:'Pelan if–then yang menetapkan situasi pencetus dan tindakan membantu pencapaian matlamat.',u:'Komitmen ditulis sebagai ayat: “Jika saya menyerahkan tugasan, saya akan nyatakan hasil, PIC dan tarikh siap.”'},
-  safety:{step:'TNA',p:'Keselamatan psikologi pasukan berkait dengan tingkah laku pembelajaran pasukan.',u:'Semak sama ada ahli pasukan selesa bertanya, mengakui kesilapan, meminta bantuan dan menyuarakan kebimbangan.'},
-  sbi:{step:'Contoh pelan',p:'Feedback distrukturkan melalui Situation–Behavior–Impact, dengan fokus pada tingkah laku yang diperhatikan.',u:'Digunakan dalam contoh pelan “Feedback penyelia” untuk simulasi dan tindakan susulan yang dipersetujui.'},
-  teamstepps:{step:'Contoh pelan',p:'Alat komunikasi pasukan seperti SBAR, check-back dan handoff. Asalnya dalam konteks kesihatan.',u:'Diadaptasi dalam contoh pelan serahan antara jabatan: mesej tersusun dan penerima mengesahkan kefahaman.'},
-  kirkpatrick:{step:'PLAN',p:'Penilaian membezakan Reaction, Learning, Behavior dan Results.',u:'Bukti kemajuan dipisahkan: peserta suka? boleh buat? mengamalkan? apa yang berubah pada kerja?'},
-  roi:{step:'PITCH',p:'Penilaian ROI memisahkan sumbangan program daripada faktor lain, mengambil kira kos penuh, dan melaporkan manfaat tak ketara secara berasingan.',u:'Cadangan kepada management dikaitkan dengan ukuran masa, kualiti, kos atau produktiviti; ROI dikira apabila data mencukupi.'},
-  pdsa:{step:'PLAN',p:'Plan–Do–Study–Act menguji perubahan pada skala kecil, memerhati hasil dan memperbaiki percubaan seterusnya.',u:'Pelan susulan dijadikan percubaan kerja: uji pada beberapa tugasan, semak hasil, laraskan pendekatan.'},
-  hrdcorp:{step:'Konteks Malaysia',p:'Laporan tahun 2020 ini menghubungkan TNA dengan matlamat organisasi, keupayaan semasa, kemahiran masa hadapan dan semakan jurang latihan.',u:'Konteks tempatan untuk HR SME menyusun keperluan pembangunan. Ini laporan 2020, bukan panduan semasa.'}
-};
-if (typeof PROGRAM_REFERENCES !== 'undefined') {
-  $('#references-list').innerHTML = PROGRAM_REFERENCES.map((r, i) => {
-    const n = REF_NOTES[r.id] || {};
-    return `<article class="ref"><span class="ref-no">${String(i+1).padStart(2,'0')}</span><div>` +
-      `<a class="ref-title" href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.title)}</a>` +
-      `<span class="ref-meta">${esc(r.author)} · ${esc(r.year)}</span>` +
-      (n.p ? `<p><b>Prinsip:</b> ${esc(n.p)}</p><p><b>Dalam program ini:</b> ${esc(n.u)}</p>` : '') +
-      `</div>${n.step ? `<span class="ref-step">${esc(n.step)}</span>` : ''}</article>`;
-  }).join('');
-}
-
 /* ---------- galeri + lightbox ---------- */
 (function(){
   $('#photo-grid').innerHTML = GALLERY.map((g,i) =>
