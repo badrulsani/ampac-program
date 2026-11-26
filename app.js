@@ -116,11 +116,13 @@ if (typeof PROGRAM_REFERENCES !== 'undefined') {
     }
     if (now >= start) { cd.hidden = true; lab.textContent = 'HARI INI'; st.hidden = false; st.textContent = 'Sesi sedang berlangsung'; return; }
     const s = Math.floor((start - now) / 1000);
-    $('#cdD').textContent = Math.floor(s/86400);
-    $('#cdH').textContent = String(Math.floor(s%86400/3600)).padStart(2,'0');
-    $('#cdM').textContent = String(Math.floor(s%3600/60)).padStart(2,'0');
+    const put = (id, v) => { const e = $(id); if (e.textContent !== v) { e.textContent = v; e.classList.remove('tk'); void e.offsetWidth; e.classList.add('tk'); } };
+    put('#cdD', String(Math.floor(s/86400)));
+    put('#cdH', String(Math.floor(s%86400/3600)).padStart(2,'0'));
+    put('#cdM', String(Math.floor(s%3600/60)).padStart(2,'0'));
+    put('#cdS', String(s%60).padStart(2,'0'));
   }
-  tick(); setInterval(tick, 30000);
+  tick(); setInterval(tick, 1000);
   if (CONFIG.seatsLeft !== null) { const e = $('#seats'); e.hidden = false; e.textContent = 'Baki tempat: ' + CONFIG.seatsLeft; }
 })();
 
@@ -161,6 +163,7 @@ if (typeof PROGRAM_REFERENCES !== 'undefined') {
       ? 'Maklumat anda telah direkodkan. Jika WhatsApp tidak terbuka, '
       : 'WhatsApp dibuka dengan mesej pendaftaran anda. Jika ia tidak terbuka, ';
     ok.hidden = false; btn.disabled = false; btn.textContent = label;
+    if (window.moveBurst) window.moveBurst();
     window.open(url, '_blank', 'noopener');
   });
 })();

@@ -12,7 +12,8 @@
 <meta property="og:image" content="https://akademiampac.com/moveyourteam/assets/badr-speaking.webp">
 <meta name="theme-color" content="#d51f35">
 <link rel="icon" href="assets/move-logo.webp">
-<link rel="stylesheet" href="styles.css?v=3.0">
+<script>document.documentElement.classList.add("js")</script>
+<link rel="stylesheet" href="styles.css?v=4.0">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Event",
  "name":"MOVE YOUR TEAM: TNA, Presentation & Action Plan dengan AI",
@@ -25,6 +26,7 @@
 </head>
 <body>
 <a class="skip" href="#utama">Terus ke kandungan</a>
+<div id="progress" aria-hidden="true"></div>
 
 <header class="site-header">
   <div class="wrap nav-wrap">
@@ -44,7 +46,7 @@
     <div class="hero-copy">
       <p class="eyebrow">Untuk HR, L&amp;D &amp; Ketua Pasukan</p>
       <p class="program-name">MOVE YOUR TEAM</p>
-      <h1>HR merancang. <span>Pasukan bergerak.</span></h1>
+      <h1>HR merancang. <span class="accent">Pasukan bergerak.</span></h1>
       <p class="hero-description">Bina Training Needs Analysis (TNA) dengan AI, sediakan cadangan untuk dibentang kepada management, kemudian susun pelan tindakan dan timeline gerak kerja. Semuanya dalam satu pagi.</p>
       <div class="facts">
         <div class="fact"><span>TARIKH</span><strong>3 Disember 2026 (Khamis)</strong></div>
@@ -53,7 +55,7 @@
         <div class="fact price"><span>YURAN PENYERTAAN</span><strong>RM49 sahaja</strong></div>
       </div>
       <div class="hero-buttons">
-        <a class="button" href="#daftar" data-cta>Sertai dengan RM49</a>
+        <a class="button pulse" href="#daftar" data-cta>Sertai dengan RM49</a>
         <a class="button ghost" href="#agenda">Lihat agenda</a>
       </div>
       <p class="bring"><b>Apa yang perlu dibawa:</b> laptop, sambungan internet, akaun ChatGPT atau Gemini, dan satu isu kerja sebenar. Gunakan contoh tanpa nama, bukan maklumat sulit.</p>
@@ -64,9 +66,12 @@
         <div class="photo-shade"></div>
         <div class="hero-photo-label"><i class="label-dot"></i> KOMUNIKASI YANG MENGGERAKKAN TINDAKAN</div>
       </div>
+      <div class="orbit o1" style="--k:1.6" aria-hidden="true"><b>1</b> TNA</div>
+      <div class="orbit o2" style="--k:-1.2" aria-hidden="true"><b>2</b> PITCH</div>
+      <div class="orbit o3" style="--k:2" aria-hidden="true"><b>3</b> PLAN</div>
       <div class="hero-note">
         <span id="cdLabel">SESI BERMULA DALAM</span>
-        <div class="countdown" id="countdown"><div><b id="cdD">--</b><small>Hari</small></div><div><b id="cdH">--</b><small>Jam</small></div><div><b id="cdM">--</b><small>Minit</small></div></div>
+        <div class="countdown" id="countdown"><div><b id="cdD">--</b><small>Hari</small></div><div><b id="cdH">--</b><small>Jam</small></div><div><b id="cdM">--</b><small>Minit</small></div><div><b id="cdS">--</b><small>Saat</small></div></div>
         <div class="cd-state" id="cdState" hidden></div>
         <div class="seats" id="seats" hidden></div>
       </div>
@@ -98,10 +103,12 @@
 
 <section class="manifesto">
   <div class="wrap">
-    <p>Datang dengan satu cabaran.<br><span>Pulang dengan satu pelan tindakan.</span></p>
+    <p>Datang dengan satu cabaran.<br><span class="gold">Pulang dengan satu pelan tindakan.</span></p>
     <div class="manifesto-line"><span>FIKIR DENGAN JELAS.</span><span>BENTANG DENGAN YAKIN.</span><span>GERAK DENGAN ARAH.</span></div>
   </div>
 </section>
+
+<div class="marquee" aria-hidden="true"><div class="track"><span>TNA</span><i>✦</i><span>PITCH</span><i>✦</i><span>PLAN</span><i>✦</i><span>HR MERANCANG</span><i>✦</i><span>PASUKAN BERGERAK</span><i>✦</i><span>TNA</span><i>✦</i><span>PITCH</span><i>✦</i><span>PLAN</span><i>✦</i><span>HR MERANCANG</span><i>✦</i><span>PASUKAN BERGERAK</span><i>✦</i></div><div class="track"><span>TNA</span><i>✦</i><span>PITCH</span><i>✦</i><span>PLAN</span><i>✦</i><span>HR MERANCANG</span><i>✦</i><span>PASUKAN BERGERAK</span><i>✦</i><span>TNA</span><i>✦</i><span>PITCH</span><i>✦</i><span>PLAN</span><i>✦</i><span>HR MERANCANG</span><i>✦</i><span>PASUKAN BERGERAK</span><i>✦</i></div></div>
 
 <section class="section" id="hasil">
   <div class="wrap">
@@ -123,6 +130,38 @@
         </div>
         <div class="plan-paper" id="case-preview" aria-live="polite"></div>
         <p class="illustration-note">Contoh rekaan ringkas. Timeline contoh boleh disesuaikan; bukan tempoh wajib 30 hari. Pelan sebenar bergantung pada input, kelulusan dan semakan organisasi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section live" id="demo">
+  <div class="wrap">
+    <div class="section-heading">
+      <div><p class="eyebrow gold">Demo interaktif</p><h2>Tengok bagaimana satu isu <em>jadi satu pelan.</em></h2></div>
+      <p>Pilih satu cabaran dan lihat tiga hasil terbina langkah demi langkah. Ini demo ilustrasi; dalam sesi, anda membina daripada isu anda sendiri.</p>
+    </div>
+    <div class="live-grid">
+      <div class="live-left">
+        <p class="live-label">Pilih cabaran</p>
+        <div class="live-chips" role="group" aria-label="Pilih cabaran">
+          <button type="button" class="lchip on" data-live="handover" aria-pressed="true">Serahan antara jabatan</button>
+          <button type="button" class="lchip" data-live="feedback" aria-pressed="false">Feedback penyelia</button>
+          <button type="button" class="lchip" data-live="service" aria-pressed="false">Respons pelanggan</button>
+        </div>
+        <ol class="lsteps">
+          <li class="lstep" data-s="tna"><b>TNA</b><span>Kenal pasti keperluan</span></li>
+          <li class="lstep" data-s="pitch"><b>PITCH</b><span>Bentang cadangan</span></li>
+          <li class="lstep" data-s="plan"><b>PLAN</b><span>Susun tindakan &amp; timeline</span></li>
+        </ol>
+        <button class="button gold" id="liveRun" type="button">▶ Main semula</button>
+      </div>
+      <div class="live-stage">
+        <div class="stage-top"><span class="dots"><i></i><i></i><i></i></span><b>MOVE WORKSPACE</b><em>DEMO ILUSTRASI</em></div>
+        <div class="prompt"><small>ISU ANDA</small><p><span id="typed"></span><i class="caret"></i></p></div>
+        <div class="lpanel" data-p="tna"><h4><b>TNA</b> Analisis awal: di mana jurangnya?</h4><div id="tnaBars" class="bars"></div><p class="tnanote" id="tnaNote"></p></div>
+        <div class="lpanel" data-p="pitch"><h4><b>PITCH</b> Lima slaid untuk management</h4><div class="slides" id="pitchSlides"></div></div>
+        <div class="lpanel" data-p="plan"><h4><b>PLAN</b> Pelan tindakan &amp; timeline</h4><div id="ganttRows" class="gantt"></div><div class="gantt-axis" id="ganttAxis"></div></div>
       </div>
     </div>
   </div>
@@ -211,7 +250,7 @@
   <div class="wrap price-grid">
     <div>
       <p class="eyebrow gold">Yuran penyertaan</p>
-      <div class="price-tag"><small>RM</small>49</div>
+      <div class="price-tag"><small>RM</small><span data-count="49">49</span></div>
       <p class="price-sub">seorang · sesi 3.5 jam · 3 Disember 2026</p>
     </div>
     <div>
@@ -240,7 +279,7 @@
       <h2>Jelas bila berbicara. <em>Praktikal bila membimbing.</em></h2>
       <p class="trainer-role">Tuan Hj Badrul Sani · Master Trainer AMPAC | Speaker | Author | TV &amp; Radio Celebrity</p>
       <p>Abg Badr ialah Master Trainer dan Professional Speaker yang mengetuai pembangunan modul serta penyampaian utama AMPAC Corporate Training. Gayanya santai tetapi berimpak: humor, cerita, analogi visual dan strategi praktikal yang dekat dengan cabaran manusia di tempat kerja.</p>
-      <div class="stats"><div><b>85,000+</b><span>peserta sejak 2007</span></div><div><b>18+</b><span>tahun pengalaman latihan</span></div></div>
+      <div class="stats"><div><b><span data-count="85000">85,000</span>+</b><span>peserta sejak 2007</span></div><div><b><span data-count="18">18</span>+</b><span>tahun pengalaman latihan</span></div></div>
       <div class="chips"><span>Communication</span><span>Public Speaking</span><span>Presentation</span><span>Leadership Communication</span><span>Customer Service</span></div>
       <div class="trainer-signoff"><img src="assets/ampac-corporate-training-dark.webp" alt="AMPAC Corporate Training" width="150" height="49" loading="lazy"><span>KOMUNIKASI. INSPIRASI. TRANSFORMASI.</span></div>
     </div>
@@ -357,7 +396,8 @@
   <div class="lightbox-bottom"><button id="previous-photo" type="button">← Sebelum</button><p id="photo-caption"></p><button id="next-photo" type="button">Seterusnya →</button></div>
 </dialog>
 
-<script src="sources.js?v=3.0"></script>
-<script src="app.js?v=3.0"></script>
+<script src="sources.js?v=4.0"></script>
+<script src="app.js?v=4.0"></script>
+<script src="fx.js?v=4.0"></script>
 </body>
 </html>
