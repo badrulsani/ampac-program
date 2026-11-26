@@ -4,46 +4,47 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#d51f35">
-<title>MOVE YOUR TEAM Planner | TNA, Pitch &amp; Pelan Tindakan</title>
-<meta name="description" content="Satu isu kerja, tiga langkah: analisis TNA, pitch kepada superior dan pelan tindakan bertarikh. Muat turun slaid, kalendar dan dokumen.">
+<title>MOVE YOUR TEAM Planner | TNA, Pitch &amp; Checklist</title>
+<meta name="description" content="Satu isu kerja, tiga langkah: TNA (Training Needs Analysis), pitch kepada superior dan checklist bertarikh. One issue, three steps.">
 <link rel="icon" href="assets/move-logo.png">
-<link rel="stylesheet" href="app.css?v=5.0">
+<link rel="stylesheet" href="app.css?v=6.0">
 </head>
 <body>
 <header class="top">
   <div class="wrap">
     <a href="#mula" aria-label="MOVE YOUR TEAM Planner, halaman utama"><img class="logo" src="assets/move-logo.webp" alt="MOVE YOUR TEAM" width="106" height="46"></a>
     <div class="sp"></div>
-    <div id="save-status" role="status"><span>Draf disimpan pada peranti ini</span></div>
+    <div id="save-status" role="status"><span>Disimpan <i class="en">Saved</i></span></div>
     <div class="menu" id="menu">
       <button class="btn sm" id="menu-btn" aria-haspopup="true" aria-expanded="false">Menu ▾</button>
       <div class="menu-pop" role="menu">
-        <a href="#bantuan" role="menuitem">Panduan</a>
-        <button data-a="backup" role="menuitem">Simpan sandaran (.json)</button>
-        <button data-a="import" role="menuitem">Buka sandaran</button>
-        <button data-a="reset" role="menuitem">Mulakan pelan baharu</button>
+        <a href="#bantuan" role="menuitem">Panduan &amp; istilah <i class="en">Guide &amp; glossary</i></a>
+        <button data-a="backup" role="menuitem">Simpan sandaran <i class="en">Save backup (.json)</i></button>
+        <button data-a="import" role="menuitem">Buka sandaran <i class="en">Open backup</i></button>
+        <button data-a="reset" role="menuitem">Mulakan baharu <i class="en">Start new</i></button>
       </div>
     </div>
   </div>
 </header>
 <nav class="stepper" id="stepper" aria-label="Langkah MOVE"><div class="wrap"></div></nav>
-<aside id="dl-note" hidden><div class="wrap">Jika fail belum muncul, <a id="dl-link" href="#">klik di sini untuk memuat turun</a> dan semak folder Downloads.</div></aside>
+<aside id="dl-note" hidden><div class="wrap">Jika fail belum muncul, <a id="dl-link" href="#">klik di sini untuk muat turun</a> dan semak folder Downloads. <i class="en">If the file has not appeared, click here to download and check your Downloads folder.</i></div></aside>
 
 <main id="app" tabindex="-1"><div class="wrap"><p>Memuatkan…</p></div></main>
 
 <footer>
   <div class="wrap">
-    <div style="display:flex;gap:16px;align-items:center"><img src="assets/ampac-dark.webp" alt="AMPAC Corporate Training" width="110" height="36"><span>MOVE YOUR TEAM Planner 5.0 · Bersama Abg Badr</span></div>
-    <span>Data kekal dalam pelayar anda. Tiada apa-apa dihantar ke mana-mana.</span>
+    <div class="foot-top"><div style="display:flex;gap:16px;align-items:center"><img src="assets/ampac-dark.webp" alt="AMPAC Corporate Training" width="110" height="36"><span>MOVE YOUR TEAM Planner 6.0 · Bersama Abg Badr</span></div>
+    <span>Data kekal dalam pelayar (browser) anda. <i class="en">Your data stays in your browser.</i></span></div>
+    <p class="disclaimer"><b>Penafian:</b> Kandungan dijana daripada maklumat anda dan hanya sebagai panduan. AMPAC Human Development Sdn Bhd dan penganjur tidak bertanggungjawab atas sebarang kerugian yang timbul daripada penggunaan jawapan di laman web ini.<br><i class="en"><b>Disclaimer:</b> Content is generated from your input and is for guidance only. AMPAC Human Development Sdn Bhd and the organiser accept no liability for any loss arising from the use of answers on this website.</i></p>
   </div>
 </footer>
 
 <input hidden id="import-file" type="file" accept="application/json,.json">
-<dialog id="dlg"><h2 id="dlg-t"></h2><p id="dlg-p"></p><div class="row"><button class="btn" id="dlg-no">Batal</button><button class="btn primary" id="dlg-yes">Teruskan</button></div></dialog>
+<dialog id="dlg"><h2 id="dlg-t"></h2><p id="dlg-p"></p><div class="row"><button class="btn" id="dlg-no">Batal <i class="en">Cancel</i></button><button class="btn primary" id="dlg-yes">Teruskan <i class="en">Continue</i></button></div></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
 <section id="print-area" aria-hidden="true"></section>
 
-<script src="engine.js?v=5.0"></script>
-<script src="app.js?v=5.0"></script>
+<script src="engine.js?v=6.0"></script>
+<script src="app.js?v=6.0"></script>
 </body>
 </html>
