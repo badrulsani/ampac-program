@@ -213,8 +213,8 @@
       }));
       d.tasksSig = clampStr(o.tasksSig, 600);
       /* Checklist daripada struktur lama (sebelum langkah pelaksanaan sebenar) dijana semula supaya tidak bercampur dengan langkah baharu. */
-      const KNOWN = ['pic', 'baiki', 'trainer', 'logistik', 'latih', 'bayar', 'notis', 'pantau', 'semak', 'sahkan', 'putus'];
-      if (d.tasks.length && (!d.tasks.some(t => KNOWN.includes(t.grp)) || d.tasks.some(t => t.grp === 'lulus' || t.grp === 'coach'))) { d.tasks = null; d.tasksSig = ''; }
+      const KNOWN = ['lulus', 'tarikh', 'trainer', 'tempat', 'kos', 'baiki', 'latih', 'pantau', 'semak'], OLD = ['pic', 'logistik', 'bayar', 'notis', 'sahkan', 'putus', 'coach'];
+      if (d.tasks.length && (!d.tasks.some(t => KNOWN.includes(t.grp)) || d.tasks.some(t => OLD.includes(t.grp)))) { d.tasks = null; d.tasksSig = ''; }
     }
     if (o.lama && typeof o.lama === 'object') d.lama = o.lama;
     return d;
@@ -447,56 +447,59 @@
     if (role === 'hr') return has(S.nama) ? 'HR (' + S.nama.trim() + ')' : 'HR';
     return { superior: 'Superior', trainer: 'Trainer', pemilik: 'Pemilik proses (Process owner)' }[role] || role;
   };
+  const tpath = D => train(D) || D.fit === 'belum' || D.fit === 'tiada';
   function planBase(S) {
     const D = diagnose(S), warns = [], guessed = !dOK(S.mula);
-    const start = nextBD(P(guessed ? todayISO() : S.mula)), pic = r => picName(S, r), isTrain = train(D);
-    const bayar = S.minta.includes('bajet') || num(S.yuran) !== null;
-    const steps = []; let G = 'pic';
+    const start = nextBD(P(guessed ? todayISO() : S.mula)), pic = r => picName(S, r), tp = tpath(D);
+    const steps = []; let G = 'lulus';
     const add = (fasa, t, who, dur, bk) => steps.push({ fasa, t, pic: who, dur, bk, grp: G });
-    /* Anggapan: pitch sudah selesai dan mendapat lampu hijau. Langkah di bawah ialah kerja melaksanakannya. */
-    if (D.fit === 'belum' || D.fit === 'tiada') {
-      G = 'sahkan';
-      if (D.fit === 'belum') {
-        add('sedia', B('Kumpul 5 hingga 10 contoh kejadian dan rekod', 'Collect 5 to 10 incident examples and records'), pic('hr'), 3, B('Senarai contoh dan rekod', 'List of examples and records'));
-        add('sedia', B('Sahkan punca bersama superior dan pemilik proses', 'Validate the root causes with the superior and process owner'), pic('hr') + ' + Superior', 2, B('Nota perbincangan; punca disahkan', 'Discussion notes; causes validated'));
-      } else add('sedia', B('Semak semula isu bersama superior: adakah ia benar-benar masalah prestasi?', 'Re-check the issue with the superior: is it really a performance problem?'), pic('hr') + ' + Superior', 2, B('Nota perbincangan', 'Discussion notes'));
-      G = 'putus'; add('sedia', B('Kemas kini jawapan TNA dan putuskan langkah seterusnya', 'Update the TNA answers and decide the next step'), pic('hr'), 1, B('Keputusan direkod', 'Decision recorded'));
-    } else {
-      G = 'pic';
-      add('sedia', B('Lantik PIC dan seorang pengganti', 'Appoint a PIC and a back-up'), pic('superior'), 1, B('PIC dan pengganti dinamakan', 'PIC and back-up named'));
-      add('sedia', B('Catat keadaan sebelum (baseline) dan penunjuk kejayaan', 'Record the situation before (the baseline) and the success indicators'), pic('hr'), 2, B('Baseline direkod', 'Baseline recorded'));
+    /* Lima kumpulan tetap (Cepat): lulus, tarikh, trainer, tempat, kos. Kumpulan lain (latih, pantau, semak, baiki) hanya dalam Lengkap. */
+    G = 'lulus';
+    add('sedia', B('Dapatkan kelulusan bertulis (e-mel atau memo) daripada superior', 'Get written approval (e-mail or memo) from the superior'), pic('superior'), 3, B('E-mel atau memo kelulusan', 'Approval e-mail or memo'));
+    add('sedia', B('Lantik PIC dan seorang pengganti', 'Appoint a PIC and a back-up'), pic('superior'), 1, B('PIC dan pengganti dinamakan', 'PIC and back-up named'));
+    add('sedia', B('Catat keadaan sebelum (baseline) dan penunjuk kejayaan', 'Record the situation before (the baseline) and the success indicators'), pic('hr'), 2, B('Baseline direkod', 'Baseline recorded'));
+    if (tp) {
       G = 'baiki';
       D.envGaps.forEach(f => add('sedia', B('Baiki persekitaran: ' + f.q.lab.m.toLowerCase(), 'Fix the environment: ' + f.q.lab.e.toLowerCase()), pic('pemilik'), 5, f.q.id === 'info' ? B('Standard dan cara maklum balas dijelaskan', 'Standard and feedback method clarified') : f.q.id === 'sumber' ? B('SOP, templat atau alat siap digunakan', 'SOP, template or tool ready for use') : B('Pengiktirafan dan susulan diselaraskan', 'Recognition and follow-up aligned')));
       if (D.perGaps.some(f => f.q.id !== 'tahu')) add('sedia', B('Bincang 1-ke-1 (coaching) tentang kapasiti dan motif', 'Hold one-to-one coaching on capacity and motives'), pic('superior'), 5, B('Nota coaching dan tindakan dipersetujui', 'Coaching notes and agreed actions'));
-      if (isTrain) {
-        G = 'trainer';
-        add('trainer', B('Senaraikan 2 hingga 3 calon trainer (dalaman atau luar)', 'Shortlist 2 to 3 trainer candidates (internal or external)'), pic('hr'), 3, B('Senarai calon dan anggaran yuran', 'Candidate list and fee estimates'));
-        add('trainer', B('Hantar jemputan dan brif kepada calon: objektif, sasaran peserta dan tarikh cadangan', 'Send the invitation and brief to the candidates: objectives, target participants and proposed dates'), pic('hr'), 2, B('Jemputan dihantar', 'Invitation sent'));
-        add('trainer', B('Susuli jemputan sehingga ada jawapan', 'Follow up on the invitation until there is a reply'), pic('hr'), 5, B('Jawapan calon diterima', 'Candidates\' replies received'));
-        add('trainer', B('Sahkan trainer secara bertulis: tarikh, yuran dan skop', 'Confirm the trainer in writing: date, fee and scope'), pic('hr'), 3, B('E-mel atau surat pengesahan', 'Confirmation e-mail or letter'));
-        G = 'logistik';
-        add('logistik', B('Sahkan tarikh dan peserta, dan dapatkan pelepasan tugas daripada superior mereka', 'Confirm the date and participants, and get their superiors\' release from duties'), pic('hr') + ' + Superior', 5, B('Senarai peserta disahkan', 'Participant list confirmed'));
-        add('logistik', B('Tempah tempat, peralatan dan makanan', 'Book the venue, equipment and food'), pic('hr'), 3, B('Tempahan disahkan', 'Bookings confirmed'));
-        add('logistik', B('Hantar notis kepada peserta: tarikh, lokasi dan apa yang perlu disediakan', 'Send the notice to participants: date, venue and what to prepare'), pic('hr'), 2, B('Notis dihantar', 'Notice sent'));
-        G = 'trainer';
-        add('logistik', B('Brif trainer dengan isu sebenar daripada TNA supaya latihan tidak generik', 'Brief the trainer with the real issue from the TNA so the training is not generic'), pic('hr'), 1, B('Brif dihantar kepada trainer', 'Brief sent to the trainer'));
-        G = 'latih';
-        add('laksana', B('Jalankan latihan, dan rekod kehadiran serta maklum balas peserta', 'Run the training, and record attendance and participant feedback'), pic('trainer'), 1, B('Kehadiran dan maklum balas direkod', 'Attendance and feedback recorded'));
-        if (bayar) {
-          G = 'bayar';
-          add('laksana', B('Selesaikan bayaran kepada trainer atau penyedia', 'Settle the payment to the trainer or provider'), pic('hr'), 3, B('Bayaran direkod', 'Payment recorded'));
-          add('laksana', B('Edarkan sijil dan bahan kepada peserta', 'Issue certificates and materials to participants'), pic('hr'), 2, B('Sijil dan bahan diedarkan', 'Certificates and materials issued'));
-        }
-      } else {
-        G = 'notis';
-        add('laksana', B('Maklumkan perubahan kepada pasukan dan superior mereka', 'Tell the team and their superiors about the change'), pic('hr') + ' + ' + pic('pemilik'), 2, B('Maklumat dihantar kepada pasukan', 'Information sent to the team'));
-      }
+      G = 'tarikh';
+      add('trainer', B('Senaraikan 2 hingga 3 calon trainer (dalaman atau luar)', 'Shortlist 2 to 3 trainer candidates (internal or external)'), pic('hr'), 3, B('Senarai calon dan anggaran yuran', 'Candidate list and fee estimates'));
+      add('trainer', B('Tentukan tarikh dan lokasi cadangan', 'Decide the proposed date and venue'), pic('hr'), 2, B('Tarikh dan lokasi cadangan direkod', 'Proposed date and venue recorded'));
+      G = 'trainer';
+      add('trainer', B('Hantar jemputan dan brif kepada calon: objektif, sasaran peserta dan tarikh cadangan', 'Send the invitation and brief to the candidates: objectives, target participants and proposed dates'), pic('hr'), 2, B('Jemputan dihantar', 'Invitation sent'));
+      add('trainer', B('Susuli jemputan sehingga ada jawapan', 'Follow up on the invitation until there is a reply'), pic('hr'), 5, B('Jawapan calon diterima', 'Candidates\' replies received'));
+      G = 'kos';
+      add('trainer', B('Dapatkan sebut harga trainer dan sahkan bajet', 'Get the trainer\'s quotation and confirm the budget'), pic('hr'), 3, B('Sebut harga dan bajet disahkan', 'Quotation and budget confirmed'));
+      G = 'trainer';
+      add('trainer', B('Sahkan trainer secara bertulis: tarikh, yuran dan skop', 'Confirm the trainer in writing: date, fee and scope'), pic('hr'), 3, B('E-mel atau surat pengesahan', 'Confirmation e-mail or letter'));
+      G = 'tarikh';
+      add('logistik', B('Sahkan tarikh dan peserta, dan dapatkan pelepasan tugas daripada superior mereka', 'Confirm the date and participants, and get their superiors\' release from duties'), pic('hr') + ' + Superior', 5, B('Senarai peserta disahkan', 'Participant list confirmed'));
+      G = 'tempat';
+      add('logistik', B('Tempah tempat, peralatan dan makanan', 'Book the venue, equipment and food'), pic('hr'), 3, B('Tempahan disahkan', 'Bookings confirmed'));
+      add('logistik', B('Hantar notis kepada peserta: tarikh, lokasi dan apa yang perlu disediakan', 'Send the notice to participants: date, venue and what to prepare'), pic('hr'), 2, B('Notis dihantar', 'Notice sent'));
+      G = 'trainer';
+      add('logistik', B('Brif trainer dengan isu sebenar daripada TNA supaya latihan tidak generik', 'Brief the trainer with the real issue from the TNA so the training is not generic'), pic('hr'), 1, B('Brif dihantar kepada trainer', 'Brief sent to the trainer'));
+      G = 'latih';
+      add('laksana', B('Jalankan latihan, dan rekod kehadiran serta maklum balas peserta', 'Run the training, and record attendance and participant feedback'), pic('trainer'), 1, B('Kehadiran dan maklum balas direkod', 'Attendance and feedback recorded'));
+      add('laksana', B('Edarkan sijil dan bahan kepada peserta', 'Issue certificates and materials to participants'), pic('hr'), 2, B('Sijil dan bahan diedarkan', 'Certificates and materials issued'));
+      G = 'kos';
+      add('laksana', B('Selesaikan bayaran (jika ada) dan rekod kos sebenar berbanding anggaran', 'Settle the payment (if any) and record the actual cost against the estimate'), pic('hr'), 3, B('Bayaran dan kos sebenar direkod', 'Payment and actual cost recorded'));
+    } else {
+      G = 'tarikh';
+      add('trainer', B('Kenal pasti pihak yang bertanggungjawab dan tetapkan tarikh siap', 'Identify who is responsible and set the finish dates'), pic('hr') + ' + Superior', 2, B('Pihak dan tarikh disahkan', 'Owners and dates confirmed'));
+      G = 'trainer';
+      add('trainer', B('Bincang dengan pemilik proses dan pasukan tentang perubahan', 'Discuss the change with the process owner and the team'), pic('hr') + ' + ' + pic('pemilik'), 2, B('Nota perbincangan', 'Discussion notes'));
+      if (D.perGaps.some(f => f.q.id !== 'tahu')) add('trainer', B('Bincang 1-ke-1 (coaching) tentang kapasiti dan motif', 'Hold one-to-one coaching on capacity and motives'), pic('superior'), 5, B('Nota coaching dan tindakan dipersetujui', 'Coaching notes and agreed actions'));
+      G = 'kos';
+      add('trainer', B('Anggar dan sahkan kos pembaikan', 'Estimate and confirm the cost of the fixes'), pic('hr'), 2, B('Kos disahkan', 'Cost confirmed'));
+      G = 'tempat';
+      D.envGaps.forEach(f => add('logistik', B('Baiki persekitaran: ' + f.q.lab.m.toLowerCase(), 'Fix the environment: ' + f.q.lab.e.toLowerCase()), pic('pemilik'), 5, f.q.id === 'info' ? B('Standard dan cara maklum balas dijelaskan', 'Standard and feedback method clarified') : f.q.id === 'sumber' ? B('SOP, templat atau alat siap digunakan', 'SOP, template or tool ready for use') : B('Pengiktirafan dan susulan diselaraskan', 'Recognition and follow-up aligned')));
+      G = 'kos';
+      add('laksana', B('Rekod kos sebenar berbanding anggaran', 'Record the actual cost against the estimate'), pic('hr'), 1, B('Kos sebenar direkod', 'Actual cost recorded'));
     }
-    if (D.fit !== 'belum' && D.fit !== 'tiada') {
-      G = 'pantau'; add('laksana', isTrain ? B('Superior memantau amalan di tempat kerja selama 4 minggu', 'The superior monitors on-the-job practice for 4 weeks') : B('Superior memantau pelaksanaan pembaikan selama 4 minggu', 'The superior monitors the fixes for 4 weeks'), pic('superior'), 20, B('Senarai semak mingguan', 'Weekly checklist'));
-      G = 'semak'; add('semak', B('Semak hasil berbanding baseline', 'Compare results against the baseline'), pic('hr') + ' + Superior', 3, B('Perbandingan sebelum dan selepas', 'Before-and-after comparison'));
-      add('semak', B('Laporkan kepada superior dan putuskan langkah seterusnya', 'Report to the superior and decide the next step'), pic('hr'), 1, B('Laporan satu muka surat dan keputusan', 'One-page report and decision'));
-    }
+    G = 'pantau'; add('laksana', tp ? B('Superior memantau amalan di tempat kerja selama 4 minggu', 'The superior monitors on-the-job practice for 4 weeks') : B('Superior memantau pelaksanaan pembaikan selama 4 minggu', 'The superior monitors the fixes for 4 weeks'), pic('superior'), 20, B('Senarai semak mingguan', 'Weekly checklist'));
+    G = 'semak'; add('semak', B('Semak hasil berbanding baseline', 'Compare results against the baseline'), pic('hr') + ' + Superior', 3, B('Perbandingan sebelum dan selepas', 'Before-and-after comparison'));
+    add('semak', B('Laporkan kepada superior dan putuskan langkah seterusnya', 'Report to the superior and decide the next step'), pic('hr'), 1, B('Laporan satu muka surat dan keputusan', 'One-page report and decision'));
     let cur = start; const tasks = [];
     steps.forEach((s, i) => {
       const mula = nextBD(cur), siap = addBD(mula, Math.max(0, s.dur - 1)); cur = addBD(siap, 1);
@@ -513,23 +516,18 @@
     return { tasks, warns: b.warns, guessed: b.guessed, mula: dates[0] || '', tamat: dates[dates.length - 1] || '', done, total: tasks.length, pct: tasks.length ? Math.round(done / tasks.length * 100) : 0 };
   }
   /* mod Cepat: senarai tindakan ringkas (satu tindakan = satu kumpulan langkah). Tanda siap dikongsi dengan mod Lengkap. */
+  const QORDER = ['lulus', 'tarikh', 'trainer', 'tempat', 'kos'];
   const QTXT = {
-    pic: () => B('Lantik PIC dan catat keadaan sebelum', 'Appoint a PIC and record the situation before'),
-    sahkan: (S, D) => D.fit === 'tiada' ? B('Semak semula isu dengan superior', 'Re-check the issue with the superior') : B('Kumpul contoh kejadian dan sahkan dengan superior', 'Collect incident examples and validate them with the superior'),
-    baiki: (S, D) => { const m = D.envGaps.map(f => f.q.lab.m.toLowerCase()), e = D.envGaps.map(f => f.q.lab.e.toLowerCase()); if (D.perGaps.some(f => f.q.id !== 'tahu')) { m.push('coaching 1-ke-1'); e.push('one-to-one coaching'); } return B('Baiki: ' + m.join(', '), 'Fix: ' + e.join(', ')); },
-    trainer: () => B('Jemput trainer dan susuli sehingga disahkan', 'Invite a trainer and follow up until confirmed'),
-    logistik: () => B('Sahkan tarikh, tempat dan peserta', 'Confirm the date, venue and participants'),
-    latih: () => B('Jalankan latihan dan rekod kehadiran', 'Run the training and record attendance'),
-    bayar: () => B('Selesaikan bayaran dan edarkan sijil', 'Settle payment and issue certificates'),
-    notis: () => B('Maklumkan perubahan kepada pasukan', 'Tell the team about the change'),
-    putus: () => B('Kemas kini TNA dan putuskan langkah seterusnya', 'Update the TNA and decide the next step'),
-    pantau: () => B('Superior memantau selama 4 minggu', 'The superior monitors for 4 weeks'),
-    semak: () => B('Semak hasil dan laporkan kepada superior', 'Review the results and report to the superior')
+    lulus: () => B('Dapat kelulusan dari Superior', 'Get approval from the Superior'),
+    tarikh: (S, D) => tpath(D) ? B('Kenal pasti trainer, tarikh dan lokasi', 'Identify the trainer, date and venue') : B('Kenal pasti pihak bertanggungjawab dan tarikh siap', 'Identify who is responsible and the finish dates'),
+    trainer: (S, D) => tpath(D) ? B('Engage dengan trainer', 'Engage the trainer') : B('Engage dengan pemilik proses dan pasukan', 'Engage the process owner and the team'),
+    tempat: (S, D) => tpath(D) ? B('Prepare tempat dan peralatan program', 'Prepare the venue and equipment for the program') : B('Sediakan SOP, templat atau alat yang diperlukan', 'Prepare the SOPs, templates or tools needed'),
+    kos: () => B('Uruskan kos sebelum dan selepas program', 'Manage the costs before and after the program')
   };
   function quick(S) {
-    const PL = plan(S), D = diagnose(S), order = [], map = {};
-    PL.tasks.forEach(t => { const k = t.grp || 'x_' + t.id; if (!map[k]) { map[k] = []; order.push(k); } map[k].push(t); });
-    const items = order.map(k => { const ts = map[k], tx = QTXT[k] ? QTXT[k](S, D) : B(ts[0].tugas, ts[0].te || ''); return { key: k, m: tx.m, e: tx.e, n: ts.length, done: ts.every(t => t.done) }; });
+    const PL = plan(S), D = diagnose(S), map = {};
+    PL.tasks.forEach(t => { if (QORDER.includes(t.grp)) (map[t.grp] = map[t.grp] || []).push(t); });
+    const items = QORDER.filter(k => map[k]).map(k => { const tx = QTXT[k](S, D); return { key: k, m: tx.m, e: tx.e, n: map[k].length, done: map[k].every(t => t.done) }; });
     const done = items.filter(i => i.done).length;
     return { items, done, total: items.length, pct: items.length ? Math.round(done / items.length * 100) : 0 };
   }
