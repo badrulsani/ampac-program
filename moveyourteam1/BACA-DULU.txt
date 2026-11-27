@@ -1,4 +1,4 @@
-MOVE YOUR TEAM PLANNER 6.0 | AMPAC
+MOVE YOUR TEAM PLANNER 6.1 | AMPAC
 
 PASANG
 1. Sandarkan folder moveyourteam1 yang sedia ada di hosting.
@@ -8,7 +8,10 @@ PASANG
 4. Fail lama ini tidak lagi digunakan dan boleh dipadam selepas planner baharu berfungsi:
    move3.css, move3.js, move-core.js, knowledge.js
 5. Hard refresh selepas upload (Ctrl+F5 di Windows, Cmd+Shift+R di Mac).
-6. Semak: footer menyebut "Planner 6.0" dan penafian (Disclaimer) di bahagian paling bawah.
+6. Semak: footer menyebut "Planner 6.1" dan penafian (Disclaimer) di bahagian paling bawah.
+   Jika footer masih menyebut 6.0, pelayar masih memaparkan fail lama daripada cache. Hard refresh sekali
+   lagi, atau buka dalam tetingkap peribadi (incognito). Pastikan app.js, engine.js dan app.css di hosting
+   bertarikh hari ini.
 
 APA YANG BERUBAH DARIPADA 5.0
 - Dua bahasa: semua label, hasil dan eksport dalam Bahasa Melayu dengan English kecil dan italik.

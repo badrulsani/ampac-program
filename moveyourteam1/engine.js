@@ -1,4 +1,4 @@
-/* MOVE YOUR TEAM Planner 6.0: enjin (logik tulen, tiada DOM).
+/* MOVE YOUR TEAM Planner 6.1: enjin (logik tulen, tiada DOM).
    Semua kandungan dijana dalam dua bahasa: Melayu (m) dan English (e).
    Draf dalaman disusun mengikut kerangka TNA yang diiktiraf. AI (ChatGPT atau Claude) ialah penambah pilihan. */
 (function (root) {
@@ -684,7 +684,7 @@
     return html.replace(/<p class="en( sm)?">/g, '<p class="en" style="font-style:italic;font-size:9pt;color:#5f656c;margin-top:0">')
       .replace(/<p class="muted">/g, '<p class="muted" style="color:#666666;font-size:9.5pt">')
       .replace(/<i class="en( blk)?">/g, '<i class="en" style="font-style:italic;font-size:9pt;color:#5f656c">')
-      .replace(/<table( class="kv")?>/g, '<table$1 border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;width:100%;border:1px solid #cfcfd3">')
+      .replace(/<table( class="kv")?>/g, '<table$1 border="1" cellspacing="0" cellpadding="5" width="100%" style="border-collapse:collapse;width:100%;border:1px solid #cfcfd3">').replace(/<tr>/g, '<tr style="page-break-inside:avoid">')
       .replace(/<th>/g, '<th style="background:#f3eee2;text-align:left;border:1px solid #cfcfd3">').replace(/<td>/g, '<td style="vertical-align:top;border:1px solid #cfcfd3">')
       .replace(/<h1( class="pb")?>/g, '<h1$1 style="color:#d51f35;font-size:20pt;border-bottom:3px solid #d6b574">').replace(/<h2>/g, '<h2 style="font-size:14pt">').replace(/<h3>/g, '<h3 style="font-size:11.5pt;margin-bottom:2px">');
   }
@@ -727,7 +727,7 @@
     return d;
   }
 
-  const api = { KEY, OLD_KEYS, B, REFS, DISCLAIMER, ADAPT, Q, STAT, KEPUTUSAN, KEUTAMAAN, STATUS, FASA, esc, has, cut, dOK, P, F, nextBD, addBD, fmtD, fmtShort, todayISO, defaults, validate, diagnose, tna, tnaDoc, plan, planBase, quick, mulaOf, pitch, parseBi, biText, progress, md, bl, blocksHTML, tnaHTML, pitchHTML, checklistHTML, docBody, DOC_CSS, toCSV, toICS, toDoc, aiTnaPrompt, aiScriptPrompt, exampleData, uid, fasaT, train, GRP, BIDANG, INDUSTRI, bidangOf, industriOf, kosSummary, synopsis, synopsisHTML, infoBlocks, aiInfoPrompt, num, rm };
+  const api = { KEY, OLD_KEYS, B, REFS, DISCLAIMER, ADAPT, Q, STAT, KEPUTUSAN, KEUTAMAAN, STATUS, FASA, esc, has, cut, dOK, P, F, nextBD, addBD, fmtD, fmtShort, todayISO, defaults, validate, diagnose, tna, tnaDoc, plan, planBase, quick, mulaOf, pitch, parseBi, biText, progress, md, bl, blocksHTML, tnaHTML, pitchHTML, checklistHTML, docBody, DOC_CSS, toCSV, toICS, toDoc, aiTnaPrompt, aiScriptPrompt, exampleData, uid, fasaT, train, GRP, BIDANG, INDUSTRI, bidangOf, industriOf, kosSummary, synopsis, synopsisHTML, infoBlocks, aiInfoPrompt, KEP_SHORT: INFO_KEP, num, rm };
   if (typeof module !== 'undefined') module.exports = api;
   root.Move = api;
 })(typeof window !== 'undefined' ? window : globalThis);

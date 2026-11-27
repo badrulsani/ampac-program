@@ -1,5 +1,5 @@
 'use strict';
-/* MOVE YOUR TEAM Planner 6.0: antara muka dua bahasa (Melayu + English) */
+/* MOVE YOUR TEAM Planner 6.1: antara muka dua bahasa (Melayu + English) */
 const M = Move, $ = (q, r = document) => r.querySelector(q), $$ = (q, r = document) => [...r.querySelectorAll(q)], esc = M.esc, B = M.B;
 const ROUTES = ['mula', 'tna', 'pitch', 'plan', 'hasil', 'bantuan'];
 let S = M.defaults(), storageOK = true, pitchTab = 'skrip', tnaStep = 0, dlURL = null, job = null, lastSaved = null;
@@ -226,7 +226,7 @@ function pageHasil() {
   return `<div class="wrap"><p class="eyebrow">${bi('Hasil anda', 'Your results')}</p><h1>Pelan Saya. <em>Siap digunakan.</em><span class="enh">My plan. Ready to use.</span></h1>
   <p class="intro">${bib('Ini ringkasan anda. Muat turun tiga fail di bawah, dan mulakan dengan langkah pertama dalam checklist.', 'Here is your summary. Download the three files below, and start with the first step in the checklist.')}</p>
   ${!M.progress(S).tna ? '<div class="warn">' + bib('TNA belum lengkap.', 'The TNA is incomplete.') + ' <a href="#tna">' + bi('Lengkapkan', 'Complete it') + '</a></div>' : ''}
-  <div class="sum ${M.kosSummary(S).any ? 's4' : ''}"><div class="sum-i"><span>TNA</span><b>${bx(T.keputusanTajuk)}</b></div>${M.kosSummary(S).any ? `<div class="sum-i"><span>${bi('Kos', 'Cost')}</span><b>${bx(M.kosSummary(S).ringkas)}</b></div>` : ''}<div class="sum-i"><span>${bi('Anda minta', 'You request')}</span><b>${PI.kep.map(x => esc(M.cut(x.m, 60))).join('; ')}</b></div><div class="sum-i"><span>${bi('Mula', 'Start')}</span><b>${M.mulaOf(S, PL) ? esc(M.fmtD(PL.mula)) : bi('belum ditetapkan', 'not set')}</b></div></div>
+  <div class="sum ${M.kosSummary(S).any ? 's4' : ''}"><div class="sum-i"><span>TNA</span><b>${bx(T.keputusanTajuk)}</b></div>${M.kosSummary(S).any ? `<div class="sum-i"><span>${bi('Kos', 'Cost')}</span><b>${bx(M.kosSummary(S).ringkas)}</b></div>` : ''}<div class="sum-i"><span>${bi('Anda minta', 'You request')}</span><b>${S.minta.length ? esc(S.minta.map(k => M.KEP_SHORT[k].m).join('; ')) + '<i class="en blk">' + esc(S.minta.map(k => M.KEP_SHORT[k].e).join('; ')) + '</i>' : bx(PI.kep[0])}</b></div><div class="sum-i"><span>${bi('Mula', 'Start')}</span><b>${M.mulaOf(S, PL) ? esc(M.fmtD(PL.mula)) : bi('belum ditetapkan', 'not set')}</b></div></div>
   <div class="card" style="margin-top:18px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px"><h2>${bi('Langkah seterusnya', 'Next steps')}</h2><b id="pct">${PG.done} / ${PG.total} ${bi('siap', 'done')}</b></div><div class="progress-bar"><i id="pbar" style="width:${PG.pct}%"></i></div><div class="next" id="next" style="margin-top:14px">${nextList()}</div></div>
   <h2 style="margin:26px 0 12px">${bi('Muat turun', 'Download')}</h2>
   <div class="exports">
@@ -329,7 +329,16 @@ async function exportPPTX() {
     ap.addTable(qrows, { x: 0.6, y: 0.85, w: 8.9, colW: [0.5, 7.2, 1.2], border: { type: 'solid', color: 'D8D6CF', pt: 0.5 }, autoPage: true, autoPageRepeatHeader: true, newSlideStartY: 0.5, margin: 0.05 });
   } else {
   const rows = [[H('No'), H('Tugasan / Task'), H('PIC'), H('Siap / Due'), H('Bukti / Proof')]].concat(PL.tasks.map((t, i) => [{ text: String(i + 1), options: { fontSize: 8.5, fontFace: 'Arial', valign: 'top' } }, cellB(t.tugas, t.te), { text: t.pic, options: { fontSize: 8.5, fontFace: 'Arial', valign: 'top', color: '2D3136' } }, { text: M.fmtShort(t.siap), options: { fontSize: 8.5, fontFace: 'Arial', valign: 'top', color: '2D3136' } }, cellB(t.bukti, t.be)]));
-  ap.addTable(rows, { x: 0.6, y: 0.78, w: 8.9, colW: [0.35, 3.6, 1.6, 0.75, 2.6], border: { type: 'solid', color: 'D8D6CF', pt: 0.5 }, autoPage: true, autoPageRepeatHeader: true, newSlideStartY: 0.5, margin: 0.03 });
+  /* bahagi baris secara manual supaya tiada baris yang terbelah antara dua slaid */
+  const est = t => Math.max(Math.ceil(t.tugas.length / 58) + (t.te ? Math.ceil(t.te.length / 78) : 0), Math.ceil(t.bukti.length / 38) + (t.be ? Math.ceil(t.be.length / 55) : 0), 2);
+  const chunks = []; let cur = [], used = 0;
+  PL.tasks.forEach((t, i) => { const e = est(t); if (used + e > 29 && cur.length) { chunks.push(cur); cur = []; used = 0; } cur.push(rows[i + 1]); used += e; });
+  if (cur.length) chunks.push(cur);
+  chunks.forEach((ch, k) => {
+    const sl = k ? p.addSlide({ masterName: 'MOVE' }) : ap;
+    if (k) sl.addText([{ text: 'Lampiran: Checklist tindakan (' + (k + 1) + ')', options: { bold: true, fontSize: 20, color: '17191D' } }, { text: '   Appendix: Action checklist (' + (k + 1) + ')', options: { italic: true, fontSize: 11, color: '6B7280' } }], { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontFace: 'Arial' });
+    sl.addTable([rows[0]].concat(ch), { x: 0.6, y: 0.78, w: 8.9, colW: [0.35, 3.6, 1.6, 0.75, 2.6], border: { type: 'solid', color: 'D8D6CF', pt: 0.5 }, margin: 0.03 });
+  });
   }
   try { await p.writeFile({ fileName: 'MOVE-slaid-pitch.pptx' }); $('#dl-note').hidden = true; toast('Slaid dimuat turun <i class="en">Slides downloaded</i>: MOVE-slaid-pitch.pptx'); } catch (e) { toast('Gagal menjana slaid <i class="en">Could not build slides</i>: ' + esc(e.message)); }
 }

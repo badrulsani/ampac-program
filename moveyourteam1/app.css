@@ -441,3 +441,15 @@ select{width:100%;border:1.5px solid #d8d6cf;border-radius:10px;padding:11px 13p
 }
 
 #plan-warn:empty+.card{margin-top:16px}
+
+.sum-i b .en{color:#c9cbd1;font-weight:400;font-size:12.5px}
+.sum-i .en.blk{margin-top:2px}
+
+@media(max-width:640px){
+ .card:has(>.doc){padding:6px}
+ .doc{padding:18px 14px}
+ .doc .syn{padding:2px 14px 12px}
+}
+
+/* elemen yang difokus atau digulung tidak tersembunyi di bawah header dan stepper melekat */
+html{scroll-padding-top:170px}
