@@ -29,11 +29,23 @@ APA YANG BERUBAH DARIPADA 5.0
 - Rujukan: hanya sumber yang disahkan wujud (Gilbert, Mager & Pipe, Goldstein & Ford, Kirkpatrick,
   Anderson & Krathwohl, Michie et al. COM-B, ATD, CIPD, ROI Institute, Salas et al., Baldwin & Ford,
   Locke & Latham, Gollwitzer & Sheeran). AI dibenarkan merujuk senarai itu sahaja.
-- CHECKLIST ada dua mod (suis di atas skrin):
-  CEPAT (lalai): senarai kira-kira 6 hingga 7 tindakan dengan kotak tanda. Tiada apa untuk diisi.
-  LENGKAP: checklist terperinci dengan fasa, PIC, tarikh, bukti, kalendar (.ics). Semua boleh disunting.
-  Tanda siap dikongsi antara dua mod. Dalam mod Cepat, tiada tarikh direka: tarikh mula hanya
-  muncul jika peserta memilihnya dalam mod Lengkap. Fail Word, Excel dan slaid mengikut mod yang dipilih.
+- CHECKLIST (ditulis semula): menganggap pitch sudah lulus. Soalan "di mana cadangan anda sekarang" dibuang.
+  Isinya ialah langkah sebenar melaksanakan latihan: lantik PIC, catat keadaan sebelum, senarai calon trainer,
+  hantar jemputan, SUSULI jemputan, sahkan trainer bertulis, sahkan tarikh dan peserta (pelepasan tugas),
+  tempah tempat, hantar notis, brif trainer, jalankan latihan, bayaran dan sijil (hanya jika peserta minta
+  bajet atau mengisi yuran), pantau 4 minggu, semak hasil dan laporkan. Jika punca bukan latihan, langkah
+  trainer dan logistik digantikan dengan pembaikan persekitaran, coaching dan memaklumkan pasukan.
+  Dua mod:
+  CEPAT (lalai): senarai ringkas (paling banyak 8 tindakan) dengan kotak tanda. Tiada apa untuk diisi.
+  LENGKAP (pautan kecil di bawah senarai): semua langkah terperinci dengan fasa, PIC, tarikh, bukti,
+  kalendar (.ics). Semua boleh disunting.
+  Tanda siap dikongsi antara dua mod. Dalam mod Cepat, tiada tarikh direka. Fail Word, Excel dan slaid
+  mengikut mod yang dipilih. Checklist lama yang disimpan dalam pelayar (struktur lama) dijana semula.
+- INFOGRAFIK (pilihan): butang "Salin prompt infografik" di skrin Dokumen TNA dan halaman Pelan Saya.
+  Peserta tampal prompt di ChatGPT untuk menjana satu infografik menegak (4:5) berdasarkan sinopsis.
+  Teks dalam prompt ringkas dan tepat. Angka kos hanya daripada input peserta; jika kosong, prompt
+  melarang ChatGPT melukis sebarang angka. Peserta digalakkan menyemak ejaan dan angka pada imej.
+  Akaun percuma ChatGPT mungkin menghadkan bilangan imej sehari.
 - AI (pilihan): butang di TNA (dokumen penuh) dan di PITCH (skrip). Salin prompt ke ChatGPT atau Claude,
   tampal jawapan. Tiada JSON.
 - Penafian di bahagian paling bawah dan dalam setiap fail yang dimuat turun.
@@ -54,7 +66,7 @@ UJI SEBELUM PROGRAM (10 minit, guna telefon DAN laptop)
 2. Pergi ke Pelan Saya. Muat turun Word, slaid dan Excel. Buka satu fail setiap jenis.
 3. Cuba satu kali butang AI di TNA: salin prompt ke ChatGPT atau Claude, tampal jawapan, dan pastikan
    dokumen dipaparkan dengan teks English italik.
-4. Dalam CHECKLIST (mod Cepat), tanda satu tindakan siap dan pastikan kemajuan berubah. Tukar ke Lengkap
+4. Dalam CHECKLIST (mod Cepat), tanda satu tindakan siap dan pastikan kemajuan berubah. Buka Lengkap
    dan pastikan tanda itu kekal.
 
 PERHATIAN

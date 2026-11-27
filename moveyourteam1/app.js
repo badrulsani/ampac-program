@@ -23,7 +23,7 @@ function save() {
   el.innerHTML = storageOK ? '<span>Disimpan <i class="en">Saved</i>' + (lastSaved ? ' · ' + String(lastSaved.getHours()).padStart(2, '0') + ':' + String(lastSaved.getMinutes()).padStart(2, '0') : '') + '</span>' : '<span>Storan tidak tersedia. Muat turun sandaran. <i class="en">Storage unavailable. Download a backup.</i></span>';
 }
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) { }
-const sig = () => JSON.stringify([S.status, S.mula, S.nama, S.diag]);
+const sig = () => JSON.stringify([S.mula, S.nama, S.diag]);
 function ensureTasks() { if (!S.tasks) { S.tasks = M.plan(S).tasks.map(t => Object.assign({}, t)); S.tasksSig = sig(); S.qdone = {}; } }
 function qToggle(key, on) {
   if (S.tasks && S.tasks.length) { const gm = {}; M.plan(S).tasks.forEach(t => { gm[t.id] = t.grp || 'x_' + t.id; }); S.tasks.forEach(x => { if (gm[x.id] === key) x.done = on; }); }
@@ -100,6 +100,13 @@ function tnaPreview() {
   <h4>${bi('Apa yang dicadangkan', 'What is recommended')}</h4>${li(T.intervensi)}
   <h4>${bi('Perlu disahkan sebelum membentang', 'To verify before presenting')}</h4>${T.perluSahkan.length ? li(T.perluSahkan) : '<p class="empty-note">' + bi('Tiada. Bukti anda kukuh.', 'None. Your evidence is strong.') + '</p>'}`;
 }
+function infoBox() {
+  return `<div class="card info-card"><h2>${bi('Infografik TNA', 'TNA infographic')} <span class="tag-opt">${bi('pilihan', 'optional')}</span></h2>
+  <p class="sub">${bib('Jadikan sinopsis anda satu infografik menegak yang kemas, untuk dikongsi atau ditunjukkan kepada superior. ChatGPT menjana gambar.', 'Turn your synopsis into one tidy vertical infographic to share or show your superior. ChatGPT generates the image.')}</p>
+  <div class="ai-steps"><div><b>1.</b> ${bi('Salin prompt infografik.', 'Copy the infographic prompt.')}</div><div><b>2.</b> ${bi('Tampal di ChatGPT dan minta ia menjana imej.', 'Paste it into ChatGPT and ask it to generate the image.')}</div><div><b>3.</b> ${bi('Semak ejaan dan angka pada imej. Minta ChatGPT membaiki jika ada salah.', 'Check the spelling and numbers on the image. Ask ChatGPT to fix any mistake.')}</div></div>
+  <div class="cta-row" style="margin:0 0 10px"><button class="btn primary sm" data-a="ai-info-copy">${bi('Salin prompt infografik', 'Copy infographic prompt')}</button><a class="btn sm" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a></div>
+  <p class="sub" style="font-size:13.5px;margin-top:6px">${bib('Akaun percuma ChatGPT mungkin menghadkan bilangan imej sehari. Prompt mengandungi ringkasan isu anda, jadi jangan guna jika maklumat itu sulit.', 'A free ChatGPT account may limit how many images you can make a day. The prompt contains a summary of your issue, so do not use it if that information is confidential.')}</p></div>`;
+}
 function tnaAIBox() {
   const refs = Object.entries(M.REFS).map(([id, t]) => '<li>' + esc(t) + '</li>').join('');
   return `<details class="ai" ${S.tnaAI ? 'open' : ''}><summary>${bi('Mahu TNA lebih tajam? Guna ChatGPT atau Claude', 'Want a sharper TNA? Use ChatGPT or Claude')} <span class="tag-opt">${bi('pilihan', 'optional')}</span></summary>
@@ -117,7 +124,7 @@ function pageTNA() {
   <p class="intro">${bib('Tulis dengan bahasa anda sendiri. Tak pasti? Pilih "Tak pasti". Itu pun jawapan yang berguna.', 'Write in your own words. Not sure? Choose "Not sure". That is a useful answer too.')}</p>
   ${S.ex ? '<div class="warn">' + bib('Anda menggunakan contoh. Gantikan dengan isu sebenar anda sebelum membentang.', 'You are using an example. Replace it with your real issue before presenting.') + '</div>' : ''}
   <nav class="subnav" aria-label="Skrin TNA / TNA screens">${subs.map((s, i) => `<button class="${i === tnaStep ? 'on' : ''} ${i < tnaStep ? 'done' : ''}" data-sub="${i}" ${i === tnaStep ? 'aria-current="step"' : ''}><b>${i + 1}</b><span>${esc(s.m)}<i class="en blk">${esc(s.e)}</i></span></button>`).join('')}</nav>`;
-  if (tnaStep === 3) return head + `<div class="card"><div class="doc" id="tnadoc">${M.tnaHTML(S)}</div></div>${tnaAIBox()}<div class="nav-row"><button class="btn" data-sub="2">← ${bi('Kembali', 'Back')}</button><a class="btn primary" href="#pitch">${bi('Seterusnya: PITCH', 'Next: PITCH')} →</a></div></div>`;
+  if (tnaStep === 3) return head + `<div class="card"><div class="doc" id="tnadoc">${M.tnaHTML(S)}</div></div>${infoBox()}${tnaAIBox()}<div class="nav-row"><button class="btn" data-sub="2">← ${bi('Kembali', 'Back')}</button><a class="btn primary" href="#pitch">${bi('Seterusnya: PITCH', 'Next: PITCH')} →</a></div></div>`;
   let body = '';
   if (tnaStep === 0) body = `<div class="card"><h2>${bi('Ceritakan isu anda', 'Tell us about the issue')}</h2><p class="sub">${bib('Satu isu sahaja. Mulakan dengan apa yang mengganggu kerja.', 'One issue only. Start with what disrupts the work.')}</p>
       ${ftext('isu', ['Apa masalah yang berlaku?', 'What is the problem?'], ['Apa yang mengganggu kerja.', 'What disrupts the work.'], 'Serahan kerja Sales kepada Operations kerap tidak lengkap.')}
@@ -174,19 +181,14 @@ function taskRow(t, i) {
   <button class="del" data-a="del-task" data-id="${esc(t.id)}" aria-label="Buang / Remove ${i + 1}" title="Buang / Remove">✕</button></div>`;
 }
 const staleHTML = () => (S.tasks && S.tasksSig && S.tasksSig !== sig()) ? '<div class="warn">' + bib('Anda telah menyunting checklist, dan tetapan di atas berubah selepas itu.', 'You edited the checklist, and the settings above changed afterwards.') + ' <button class="btn sm" data-a="regen">' + bi('Jana semula', 'Regenerate') + '</button></div>' : '';
-function modeSwitch() {
-  const o = [['cepat', 'Cepat', 'Quick', 'Senarai tindakan. Tanda bila siap. Tiada apa untuk diisi.', 'An action list. Tick when done. Nothing to fill in.'], ['lengkap', 'Lengkap', 'Detailed', 'PIC, tarikh, bukti dan kalendar. Semua boleh disunting.', 'PIC, due dates, proof and a calendar. Everything is editable.']];
-  return `<div class="modes" role="radiogroup" aria-label="Mod / Mode">${o.map(([v, m, e, dm, de]) => `<label><input type="radio" name="mod" data-f="mod" value="${v}" ${S.mod === v ? 'checked' : ''}><span class="mt"><b>${m}</b> <i class="en">${e}</i></span><span class="md">${dm}<i class="en blk">${de}</i></span></label>`).join('')}</div>`;
-}
 const qRow = (x, i) => `<label class="qa ${x.done ? 'done' : ''}"><input type="checkbox" data-q="${esc(x.key)}" ${x.done ? 'checked' : ''}><span class="qn">${i + 1}</span><span class="qt"><b>${esc(x.m)}</b>${x.e ? `<i class="en blk">${esc(x.e)}</i>` : ''}</span></label>`;
 function pageCepat() {
   const Q = M.quick(S);
-  return `<div class="wrap"><p class="eyebrow">${bi('Langkah 3 daripada 3', 'Step 3 of 3')} · CHECKLIST</p><h1>Apa yang perlu <em>dibuat?</em><span class="enh">What needs to be done?</span></h1>
-  <p class="intro">${bib('Tanda setiap tindakan bila ia siap. Tiada apa untuk diisi.', 'Tick each action when it is done. Nothing to fill in.')}</p>${modeSwitch()}
+  return `<div class="wrap"><p class="eyebrow">${bi('Langkah 3 daripada 3', 'Step 3 of 3')} · CHECKLIST</p><h1>Senarai <em>tindakan</em><span class="enh">Action list</span></h1>
   <div id="plan-warn">${staleHTML()}</div>
-  <div class="card"><div class="plan-head"><h2>${bi('Tindakan anda', 'Your actions')}</h2><b id="qsum">${Q.done} / ${Q.total} ${bi('siap', 'done')}</b></div><div class="progress-bar"><i id="qbar" style="width:${Q.pct}%"></i></div>
-    <div class="qlist" id="qlist">${Q.items.map(qRow).join('')}</div>
-    <p class="hint" style="margin-top:14px">${bib('Mahu tarikh, PIC dan kalendar? Pilih Lengkap di atas. Tanda siap anda kekal.', 'Want due dates, a PIC and a calendar? Choose Detailed above. Your ticks are kept.')}</p></div>
+  <div class="card"><div class="plan-head"><span class="hint" style="margin:0">${bi('Tanda bila siap', 'Tick when done')}</span><b id="qsum">${Q.done} / ${Q.total} ${bi('siap', 'done')}</b></div><div class="progress-bar"><i id="qbar" style="width:${Q.pct}%"></i></div>
+    <div class="qlist" id="qlist">${Q.items.map(qRow).join('')}</div></div>
+  <p class="modelink">${bi('Perlukan tarikh, PIC dan kalendar?', 'Need due dates, a PIC and a calendar?')} <button class="linkbtn" data-a="mod" data-v="lengkap">${bi('Buka versi Lengkap', 'Open the Detailed version')} →</button></p>
   <div class="nav-row"><a class="btn" href="#pitch">← PITCH</a><a class="btn primary" href="#hasil">${bi('Lihat Pelan Saya', 'View my plan')} →</a></div></div>`;
 }
 function planDyn() {
@@ -202,10 +204,8 @@ function pagePlan() { return S.mod === 'lengkap' ? pageLengkap() : pageCepat(); 
 function pageLengkap() {
   const D = planDyn();
   return `<div class="wrap"><p class="eyebrow">${bi('Langkah 3 daripada 3', 'Step 3 of 3')} · CHECKLIST</p><h1>Apa langkah <em>seterusnya?</em><span class="enh">What are the next steps?</span></h1>
-  <p class="intro">${bib('Pilih di mana cadangan anda sekarang dan tarikh mula. Checklist disusun mengikut fasa, dengan PIC dan tarikh. Semua boleh disunting.', 'Choose where your proposal stands and a start date. The checklist is arranged by phase with a PIC and due dates. Everything is editable.')}</p>${modeSwitch()}
-  <div class="card"><h2>${bi('Di mana cadangan anda sekarang?', 'Where does your proposal stand?')}</h2>
-    <div class="status-cards" role="radiogroup" aria-label="Status">${Object.entries(M.STATUS).map(([k, l]) => `<label><input type="radio" name="status" data-f="status" value="${k}" ${S.status === k ? 'checked' : ''}>${esc(l.m)}<i class="en blk">${esc(l.e)}</i></label>`).join('')}</div>
-    <div class="row2" style="margin-top:18px"><div class="field"><label for="mula">${bi('Tarikh mula', 'Start date')}</label><span class="hint">${bi('Jika kosong, bermula hari bekerja berikutnya.', 'If blank, starts on the next working day.')}</span><input type="date" id="mula" data-f="mula" value="${esc(S.mula)}"></div>
+  <p class="intro">${bib('Pilih tarikh mula. Checklist disusun mengikut fasa, dengan PIC dan tarikh. Semua boleh disunting.', 'Choose a start date. The checklist is arranged by phase with a PIC and due dates. Everything is editable.')}</p><p class="modelink" style="margin-top:0"><button class="linkbtn" data-a="mod" data-v="cepat">← ${bi('Kembali ke senarai ringkas', 'Back to the quick list')}</button></p>
+  <div class="card"><div class="row2"><div class="field"><label for="mula">${bi('Tarikh mula', 'Start date')}</label><span class="hint">${bi('Jika kosong, bermula hari bekerja berikutnya.', 'If blank, starts on the next working day.')}</span><input type="date" id="mula" data-f="mula" value="${esc(S.mula)}"></div>
     <div class="field"><label for="nama">${bi('Nama anda', 'Your name')} <span class="opt">${bi('pilihan', 'optional')}</span></label><span class="hint">${bi('Dipaparkan sebagai PIC (Person In Charge).', 'Shown as the PIC (Person In Charge).')}</span><input type="text" id="nama" data-f="nama" maxlength="80" value="${esc(S.nama)}"></div></div></div>
   <div id="plan-warn">${D.warn}</div>
   <div class="card"><div class="plan-head"><h2>${bi('Checklist anda', 'Your checklist')}</h2><span id="plan-sum">${D.sum}</span></div><p class="sub">${bib('Sunting tugasan, PIC dan tarikh. Tanda kotak apabila siap. PIC dan tarikh ialah cadangan sehingga dipersetujui.', 'Edit the task, PIC and date. Tick the box when done. PIC and dates are suggestions until agreed.')}</p>
@@ -234,6 +234,7 @@ function pageHasil() {
     <button class="exp" data-a="x-pptx"><span class="ic">POWERPOINT</span><b>${bi('Slaid pitch', 'Pitch slides')}</b><span>${bib('Muka depan, 5 slaid dan lampiran.', 'Cover, 5 slides and an appendix.')}</span></button>
     <button class="exp" data-a="x-csv"><span class="ic">EXCEL</span><b>Checklist</b><span>${S.mod === 'lengkap' ? bib('Dengan PIC, tarikh dan bukti.', 'With PIC, due dates and proof.') : bib('Senarai tindakan dan status siap.', 'The action list and what is done.')}</span></button></div>
   <details class="more"><summary>${bi('Format lain', 'Other formats')}: PDF, ${S.mod === 'lengkap' ? bi('kalendar', 'calendar') + ', ' : ''}${bi('sandaran', 'backup')}</summary><div class="cta-row" style="margin:12px 0 0"><button class="btn sm" data-a="x-pdf">${bi('Cetak / PDF', 'Print / PDF')}</button>${S.mod === 'lengkap' ? `<button class="btn sm" data-a="x-ics">${bi('Kalendar (.ics)', 'Calendar (.ics)')}</button>` : ''}<button class="btn sm" data-a="backup" data-where="page">${bi('Sandaran (.json)', 'Backup (.json)')}</button></div>${S.mod === 'lengkap' ? '' : `<p class="hint" style="margin-top:10px">${bib('Kalendar (.ics) tersedia dalam mod Lengkap di halaman CHECKLIST.', 'The calendar (.ics) is available in Detailed mode on the CHECKLIST page.')}</p>`}<p class="hint" style="margin-top:10px">${bib('Sandaran ialah salinan data anda untuk dibuka semula atau dipindah ke peranti lain.', 'A backup is a copy of your data to reopen later or move to another device.')}</p></details>
+  <div style="margin-top:18px">${infoBox()}</div>
   <p class="privacy" style="margin-top:14px">${bib('Penting: data hanya ada dalam pelayar (browser) ini. Jika anda kosongkan data pelayar atau tukar peranti, ia hilang. Muat turun fail sebelum menutup.', 'Important: your data lives only in this browser. If you clear browser data or switch devices, it is lost. Download your files before closing.')}</p>
   <details class="more"><summary>${bi('Lihat dokumen penuh', 'View full document')}</summary><div class="doc" id="doc" style="margin-top:12px">${M.docBody(S)}</div></details>
   ${S.lama ? `<details class="more"><summary>${bi('Catatan daripada planner lama', 'Notes from the old planner')}</summary>${(S.lama.replies || []).filter(M.has).map(r => `<pre class="prompt">${esc(r)}</pre>`).join('')}</details>` : ''}
@@ -355,7 +356,6 @@ document.addEventListener('change', e => {
   if (t.dataset.d) { S.diag[t.dataset.d] = t.value === 'x' ? null : Number(t.value); save(); refresh(); }
   if (t.dataset.f && (t.type === 'radio' || t.type === 'date')) { S[t.dataset.f] = t.value; save(); refresh(); }
   if (t.dataset.f === 'bidang') { S.bidang = t.value; save(); render(); }
-  if (t.dataset.f === 'mod') { render(); }
   if (t.dataset.q) {
     qToggle(t.dataset.q, t.checked); save();
     if (route() === 'plan') { const row = t.closest('.qa'); if (row) row.classList.toggle('done', t.checked); }
@@ -392,6 +392,8 @@ document.addEventListener('click', e => {
   if (a === 'add-task') { ensureTasks(); const last = S.tasks[S.tasks.length - 1]; S.tasks.push({ id: M.uid(), fasa: last ? last.fasa : 'laksana', tugas: 'Tugasan baharu', te: 'New task', pic: '', mula: last ? last.siap : '', siap: last ? last.siap : '', bukti: '', be: '', dep: '', done: false, grp: last ? last.grp : '' }); save(); $('#plan-tasks').innerHTML = planDyn().tasks; const rows = $$('#plan-tasks .task'); rows[rows.length - 1].querySelector('textarea').focus(); }
   if (a === 'del-task') { ensureTasks(); S.tasks = S.tasks.filter(x => x.id !== b.dataset.id); if (!S.tasks.length) { S.tasks = null; S.tasksSig = ''; S.qdone = {}; } save(); $('#plan-tasks').innerHTML = planDyn().tasks; refresh(); }
   if (a === 'regen') ask('Jana semula checklist? <i class="en">Regenerate the checklist?</i>', 'Suntingan dan tanda siap akan diganti. <i class="en blk">Your edits and ticks will be replaced.</i>', () => { S.tasks = null; S.tasksSig = ''; S.qdone = {}; save(); render(); });
+  if (a === 'mod') { S.mod = b.dataset.v === 'lengkap' ? 'lengkap' : 'cepat'; save(); render(true); }
+  if (a === 'ai-info-copy') copyText(M.aiInfoPrompt(S));
   if (a === 'ai-copy') copyText(M.aiScriptPrompt(S));
   if (a === 'ai-tna-copy') copyText(M.aiTnaPrompt(S));
   if (a === 'ai-tna-apply') {

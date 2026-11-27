@@ -88,7 +88,7 @@
     kualiti: B('Gunakan contoh kerja yang tidak mencapai standard, kemudian tunjukkan standard yang dijangka.', 'Use an example of work below standard, then show the expected standard.'),
     risiko: B('Tekankan risiko jika proses tidak diikuti dan bagaimana cadangan mengurangkannya.', 'Stress the risk if the process is not followed and how the proposal reduces it.')
   };
-  const FASA = { sahkan: B('Sahkan', 'Validate'), lulus: B('Kelulusan', 'Approval'), sedia: B('Sediakan', 'Prepare'), laksana: B('Laksana', 'Implement'), semak: B('Semak', 'Review') };
+  const FASA = { sahkan: B('Sahkan', 'Validate'), lulus: B('Kelulusan', 'Approval'), sedia: B('Persediaan', 'Preparation'), trainer: B('Trainer', 'Trainer'), logistik: B('Logistik', 'Logistics'), laksana: B('Laksana', 'Implement'), semak: B('Semak', 'Review') };
   const MONTH = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
   const DAYN = ['Ahd', 'Isn', 'Sel', 'Rab', 'Kha', 'Jum', 'Sab'];
 
@@ -212,6 +212,9 @@
         mula: dOK(x.mula) ? x.mula : '', siap: dOK(x.siap) ? x.siap : '', bukti: clampStr(x.bukti, 300), be: clampStr(x.be, 300), dep: clampStr(x.dep, 40), done: x.done === true, grp: clampStr(x.grp, 24)
       }));
       d.tasksSig = clampStr(o.tasksSig, 600);
+      /* Checklist daripada struktur lama (sebelum langkah pelaksanaan sebenar) dijana semula supaya tidak bercampur dengan langkah baharu. */
+      const KNOWN = ['pic', 'baiki', 'trainer', 'logistik', 'latih', 'bayar', 'notis', 'pantau', 'semak', 'sahkan', 'putus'];
+      if (d.tasks.length && (!d.tasks.some(t => KNOWN.includes(t.grp)) || d.tasks.some(t => t.grp === 'lulus' || t.grp === 'coach'))) { d.tasks = null; d.tasksSig = ''; }
     }
     if (o.lama && typeof o.lama === 'object') d.lama = o.lama;
     return d;
@@ -279,6 +282,16 @@
   }
 
   /* ---------- sinopsis: satu muka surat, perenggan BM kemudian perenggan EN ---------- */
+  function riskLines(D, K) {
+    const rk = [], re = [];
+    if (D.fit === 'latihan' || D.fit === 'campuran') { rk.push('Latihan tidak akan bertahan tanpa semakan superior di tempat kerja.'); re.push('Training will not last without superior follow-up on the job.'); }
+    if (D.fit === 'campuran' || D.fit === 'persekitaran') { rk.push('Hasil bergantung pada pembaikan persekitaran kerja yang dilaksanakan oleh pemilik proses.'); re.push('Results depend on the work-environment fixes being carried out by the process owner.'); }
+    if (D.fit === 'individu') { rk.push('Coaching bergantung pada kesediaan pekerja dan sokongan superior.'); re.push('Coaching depends on the worker\'s readiness and the superior\'s support.'); }
+    if (D.evidence.tier === 'lemah' || D.evidence.tier === 'belum') { rk.push('Bukti masih lemah, jadi mulakan sebagai percubaan (pilot).'); re.push('Evidence is still weak, so start as a pilot.'); }
+    if (K.any) { rk.push('Anggaran kos ialah angka anda dan belum disahkan.'); re.push('The cost estimate uses your figures and has not been verified.'); }
+    if (!rk.length) { rk.push('Tiada risiko utama dikenal pasti daripada jawapan anda.'); re.push('No major risk was identified from your answers.'); }
+    return { m: rk, e: re };
+  }
   function synopsis(S) {
     const D = diagnose(S), T = tna(S), PL = plan(S), K = kosSummary(S), bd = bidangOf(S), ind = industriOf(S), isTrain = train(D);
     const fmt = { latihan: B('bengkel praktikal dengan amalan dan maklum balas, disusuli semakan oleh superior', 'a practical workshop with practice and feedback, followed by superior review'), campuran: B('bengkel praktikal dengan amalan dan maklum balas, bersama pembaikan persekitaran kerja', 'a practical workshop with practice and feedback, together with fixes to the work environment'), persekitaran: B('tiada latihan kemahiran buat masa ini; tindakan utama ialah membaiki persekitaran kerja', 'no skills training for now; the main action is to fix the work environment'), individu: B('coaching 1-ke-1 dan pelarasan tugas, bukan kursus kemahiran', 'one-to-one coaching and adjusting duties, not a skills course') }[D.fit] || B('belum dapat ditentukan; sahkan maklumat dahulu', 'cannot be determined yet; verify the information first');
@@ -301,15 +314,72 @@
     sec.push({ h: B('5. Kekuatan bukti', '5. Strength of evidence'), paras: [B(D.evidence.label.m.charAt(0).toUpperCase() + D.evidence.label.m.slice(1) + '. ' + D.evidence.text.m, D.evidence.label.e.charAt(0).toUpperCase() + D.evidence.label.e.slice(1) + '. ' + D.evidence.text.e)] });
     const kep = S.minta.length ? S.minta.map(k => KEPUTUSAN[k]) : null, mulaT = mulaOf(S, PL) ? fmtD(PL.mula) : null;
     sec.push({ h: B('6. Keputusan diminta', '6. Decision requested'), paras: [B((kep ? kep.map(x => trim(x.m)).join('; ') : 'Belum dipilih (lihat langkah PITCH)') + '. Tarikh mula: ' + (mulaT || 'belum ditetapkan') + '.', (kep ? kep.map(x => trim(x.e)).join('; ') : 'Not yet chosen (see the PITCH step)') + '. Start date: ' + (mulaT || 'not yet set') + '.')] });
-    const rk = [], re = [];
-    if (D.fit === 'latihan' || D.fit === 'campuran') { rk.push('Latihan tidak akan bertahan tanpa semakan superior di tempat kerja.'); re.push('Training will not last without superior follow-up on the job.'); }
-    if (D.fit === 'campuran' || D.fit === 'persekitaran') { rk.push('Hasil bergantung pada pembaikan persekitaran kerja yang dilaksanakan oleh pemilik proses.'); re.push('Results depend on the work-environment fixes being carried out by the process owner.'); }
-    if (D.fit === 'individu') { rk.push('Coaching bergantung pada kesediaan pekerja dan sokongan superior.'); re.push('Coaching depends on the worker\'s readiness and the superior\'s support.'); }
-    if (D.evidence.tier === 'lemah' || D.evidence.tier === 'belum') { rk.push('Bukti masih lemah, jadi mulakan sebagai percubaan (pilot).'); re.push('Evidence is still weak, so start as a pilot.'); }
-    if (K.any) { rk.push('Anggaran kos ialah angka anda dan belum disahkan.'); re.push('The cost estimate uses your figures and has not been verified.'); }
-    if (!rk.length) { rk.push('Tiada risiko utama dikenal pasti daripada jawapan anda.'); re.push('No major risk was identified from your answers.'); }
+    const RL = riskLines(D, K), rk = RL.m, re = RL.e;
     sec.push({ h: B('7. Risiko dan andaian utama', '7. Main risks and assumptions'), paras: [B(rk.join(' '), re.join(' '))] });
     return { title: B('Sinopsis TNA', 'TNA Synopsis'), meta: B('Industri: ' + (ind ? ind.m : 'tidak dinyatakan') + '. Isu: ' + trim(cut(S.isu, 140)) + '.', 'Industry: ' + (ind ? ind.e : 'not stated') + '. Issue: ' + trim(cut(S.isu, 140)) + '.'), sections: sec, cost: K, bidang: bd };
+  }
+  /* ---------- infografik: prompt untuk ChatGPT (teks tepat, ringkas) ---------- */
+  const INFO_FIT = {
+    latihan: [B('PERLU LATIHAN', 'TRAINING NEEDED'), B('Ya. Jurang pada pengetahuan, jadi latihan berfokus boleh membantu.', 'Yes. The gap is knowledge, so focused training can help.')],
+    campuran: [B('LATIHAN + PEMBAIKAN', 'TRAINING + FIXES'), B('Ya, tetapi tidak cukup. Baiki persekitaran kerja serentak.', 'Yes, but not enough. Fix the work environment at the same time.')],
+    persekitaran: [B('BAIKI PERSEKITARAN DAHULU', 'FIX THE ENVIRONMENT FIRST'), B('Bukan jawapan utama. Baiki persekitaran kerja dahulu.', 'Not the main answer. Fix the work environment first.')],
+    individu: [B('COACHING, BUKAN LATIHAN', 'COACHING, NOT TRAINING'), B('Tidak. Isu pada kapasiti atau motif, jadi coaching lebih sesuai.', 'No. The issue is capacity or motives, so coaching fits better.')],
+    belum: [B('SAHKAN MAKLUMAT DAHULU', 'VERIFY FIRST'), B('Belum pasti. Sahkan maklumat dahulu.', 'Not certain yet. Verify the information first.')],
+    tiada: [B('TIADA JURANG JELAS', 'NO CLEAR GAP'), B('Tiada jurang yang jelas. Semak semula isu.', 'No clear gap. Re-check the issue.')]
+  };
+  const INFO_KEP = { lulus: B('Kelulusan pelan', 'Plan approval'), masa: B('Masa staf dan PIC', 'Staff time and a PIC'), bajet: B('Bajet', 'Budget'), pilot: B('Percubaan (pilot) dahulu', 'A pilot first') };
+  function infoBlocks(S) {
+    const D = diagnose(S), K = kosSummary(S), bd = bidangOf(S), ind = industriOf(S), RL = riskLines(D, K), fit = INFO_FIT[D.fit] || INFO_FIT.belum;
+    const kp = K.rows.filter(r => ['Kos masalah sekarang', 'Kos penyelesaian', 'Tempoh balik modal'].includes(r[0].m)).map(r => ({ l: r[0], v: r[1] }));
+    const kepList = S.minta.length ? S.minta.map(k => INFO_KEP[k]) : null;
+    const std = has(S.standard) ? trim(cut(S.standard, 90)) : null;
+    const low = x => x.charAt(0).toLowerCase() + x.slice(1);
+    const heading = (v => { const t = trim(String(v || '')); if (!t) return 'Cadangan pembangunan pasukan'; const first = (t.match(/^.{12,90}?[.!?](\s|$)/) || [''])[0].trim(); if (first) return first; if (t.length <= 85) return t; const c = t.slice(0, 85), cm = Math.max(c.lastIndexOf(','), c.lastIndexOf(';')); if (cm >= 30) return c.slice(0, cm); return c.slice(0, Math.max(c.lastIndexOf(' '), 40)).replace(/[,;:\s]+$/, ''); })(S.isu);
+    const blocks = [
+      { n: 1, h: B('Perlu training?', 'Is training needed?'), t: fit[1] },
+      { n: 2, h: B('Latihan apa?', 'What training?'), t: train(D) ? (bd ? B(bd.m, bd.e) : B('Belum dipilih', 'Not yet chosen')) : B('Tiada latihan kemahiran buat masa ini', 'No skills training for now') },
+      { n: 3, h: B('Kos terlibat', 'Costs involved'), t: kp.length ? B(kp.map(x => x.l.m + ': ' + x.v.m).join('. ') + '.', kp.map(x => x.l.e + ': ' + x.v.e).join('. ') + '.') : B('Belum dikira. Angka kos belum diisi.', 'Not yet calculated. Cost figures not filled in.'), kpi: kp },
+      { n: 4, h: B('Hasil dan cara menilai', 'Results and how to measure'), t: B((std ? 'Standard: ' + std.replace(/[.!?]+$/, '') + '. ' : '') + 'Semak sampel kerja pada minggu 2 dan 4.', 'Review work samples in weeks 2 and 4.') },
+      { n: 5, h: B('Kekuatan bukti', 'Strength of evidence'), t: B('Bukti: ' + D.evidence.label.m + '.', 'Evidence: ' + D.evidence.label.e + '.') },
+      { n: 6, h: B('Keputusan diminta', 'Decision requested'), t: kepList ? B(kepList.map((x, i) => i ? low(x.m) : x.m).join('; ') + '.', kepList.map((x, i) => i ? low(x.e) : x.e).join('; ') + '.') : B('Belum dipilih.', 'Not yet chosen.') },
+      { n: 7, h: B('Risiko dan andaian utama', 'Main risks and assumptions'), t: B(RL.m[0], RL.e[0]) }
+    ];
+    return { kicker: B('SINOPSIS TNA', 'TNA SYNOPSIS'), title: heading, industri: ind, badge: fit[0], blocks, cost: kp,
+      foot: B('Anggaran berdasarkan input peserta dan belum disahkan.', 'Estimates based on participant input, not verified.'), brand: 'MOVE YOUR TEAM · AMPAC' };
+  }
+  function aiInfoPrompt(S) {
+    const I = infoBlocks(S), q = v => '"' + String(v).replace(/"/g, "'") + '"';
+    const blk = I.blocks.map(b => 'BLOCK ' + b.n + '\n  Heading (Malay): ' + q(b.n + '. ' + b.h.m) + '\n  Heading (English, small italic): ' + q(b.h.e) + (b.kpi && b.kpi.length ? '\n  (No sentence in this block. Show only the figures listed below, each with its label.)' : '\n  Line (Malay): ' + q(b.t.m) + '\n  Line (English, smaller italic grey): ' + q(b.t.e))).join('\n');
+    const kpi = I.cost.length ? 'In BLOCK 3, show these figures as large bold numbers in a row (copy each value exactly):\n' + I.cost.map(x => '  - ' + q(x.l.m) + ' / ' + q(x.l.e) + ' = ' + q(x.v.m) + ' / ' + q(x.v.e)).join('\n') + '\n' : 'BLOCK 3 has no figures, so do NOT draw any numbers or amounts for it.\n';
+    return [
+      'Create ONE vertical infographic (portrait, 4:5 ratio, high resolution) that summarises a Training Needs Analysis (TNA) synopsis for a Malaysian workplace.',
+      '',
+      'STYLE: minimalist, elegant, professional corporate. Warm off-white background (#FAF8F3), charcoal text (#17191D), one red accent (#D51F35) and one gold accent (#D6B574), used sparingly. One clean modern sans-serif font. Hairline dividers, generous white space, consistent margins, clear visual hierarchy. No photos, no people, no clip-art, no gradients, no shadows, no 3D, no decorative borders. One small, simple line icon per block is allowed.',
+      '',
+      'LAYOUT, top to bottom:',
+      '1. Small spaced label ' + q(I.kicker.m + ' / ' + I.kicker.e) + ', then the title below it in large bold type.' + (I.industri ? ' Under the title, a small grey line with the industry.' : ''),
+      '2. A red rounded badge with the verdict text.',
+      '3. Seven numbered blocks stacked vertically, equal height, separated by hairlines. Each block: the number in red, the Malay heading in bold, the Malay line in regular, then the English heading and English line in smaller italic grey.',
+      '4. A slim footer with the small-print line and the brand name (text only, no logo).',
+      '',
+      'TEXT RULES (very important):',
+      '- Use ONLY the text given below. Copy every word, number, symbol and currency amount EXACTLY, character by character.',
+      '- Do not translate, shorten, reword, correct or add any text. Do not invent numbers, names, logos, watermarks or extra labels.',
+      '- Keep the Malay spelling exactly as given. If text does not fit, make it smaller. Never change it.',
+      '- Do not write any placeholder or lorem ipsum text.',
+      '',
+      'TEXT:',
+      'Title: ' + q(I.title),
+      I.industri ? 'Industry line: ' + q('Industri: ' + I.industri.m + ' / Industry: ' + I.industri.e) : '',
+      'Verdict badge: ' + q(I.badge.m + ' / ' + I.badge.e),
+      '',
+      blk,
+      '',
+      kpi + 'Footer small print: ' + q(I.foot.m + ' / ' + I.foot.e),
+      'Footer brand: ' + q(I.brand),
+      '',
+      'AFTER YOU GENERATE: read the image text back against my text above. If any word, number or spelling differs, regenerate the image and fix it before showing me.'
+    ].filter((x, i, a) => !(x === '' && a[i - 1] === '')).join('\n');
   }
   function synopsisHTML(S) {
     const Sy = synopsis(S), costTable = rows => '<table><tbody>' + rows.map(r => '<tr><th>' + bl(r[0]) + '</th><td><b>' + esc(r[1].m) + '</b><br><i class="en">' + esc(r[1].e) + '</i></td><td class="det">' + esc(r[2].m) + '<br><i class="en">' + esc(r[2].e) + '</i></td></tr>').join('') + '</tbody></table>';
@@ -380,27 +450,53 @@
   function planBase(S) {
     const D = diagnose(S), warns = [], guessed = !dOK(S.mula);
     const start = nextBD(P(guessed ? todayISO() : S.mula)), pic = r => picName(S, r), isTrain = train(D);
-    const steps = []; let G = 'sahkan';
+    const bayar = S.minta.includes('bajet') || num(S.yuran) !== null;
+    const steps = []; let G = 'pic';
     const add = (fasa, t, who, dur, bk) => steps.push({ fasa, t, pic: who, dur, bk, grp: G });
-    if (S.status === 'belum') {
-      add('sahkan', B('Kumpul 5 hingga 10 contoh kejadian dan rekod', 'Collect 5 to 10 incident examples and records'), pic('hr'), 3, B('Senarai contoh dan rekod', 'List of examples and records'));
-      add('sahkan', B('Sahkan punca bersama superior dan pemilik proses', 'Validate the root causes with the superior and process owner'), pic('hr') + ' + Superior', 2, B('Nota perbincangan; punca disahkan', 'Discussion notes; causes validated'));
-      add('sahkan', B('Tetapkan baseline dan penunjuk kejayaan', 'Set the baseline and success indicators'), pic('hr'), 1, B('Baseline direkod', 'Baseline recorded'));
-      G = 'lulus'; add('lulus', B('Bentang pitch kepada superior', 'Present the pitch to the superior'), pic('hr'), 1, B('Cadangan dibentang', 'Proposal presented'));
-      add('lulus', B('Terima keputusan bertulis dan lantik PIC', 'Receive the written decision and appoint a PIC'), pic('superior'), 3, B('E-mel atau memo kelulusan', 'Approval e-mail or memo'));
-    } else if (S.status === 'tunggu') {
-      G = 'lulus'; add('lulus', B('Susulan keputusan kelulusan', 'Follow up on the approval decision'), pic('hr'), 5, B('Keputusan bertulis diterima', 'Written decision received'));
+    /* Anggapan: pitch sudah selesai dan mendapat lampu hijau. Langkah di bawah ialah kerja melaksanakannya. */
+    if (D.fit === 'belum' || D.fit === 'tiada') {
+      G = 'sahkan';
+      if (D.fit === 'belum') {
+        add('sedia', B('Kumpul 5 hingga 10 contoh kejadian dan rekod', 'Collect 5 to 10 incident examples and records'), pic('hr'), 3, B('Senarai contoh dan rekod', 'List of examples and records'));
+        add('sedia', B('Sahkan punca bersama superior dan pemilik proses', 'Validate the root causes with the superior and process owner'), pic('hr') + ' + Superior', 2, B('Nota perbincangan; punca disahkan', 'Discussion notes; causes validated'));
+      } else add('sedia', B('Semak semula isu bersama superior: adakah ia benar-benar masalah prestasi?', 'Re-check the issue with the superior: is it really a performance problem?'), pic('hr') + ' + Superior', 2, B('Nota perbincangan', 'Discussion notes'));
+      G = 'putus'; add('sedia', B('Kemas kini jawapan TNA dan putuskan langkah seterusnya', 'Update the TNA answers and decide the next step'), pic('hr'), 1, B('Keputusan direkod', 'Decision recorded'));
     } else {
-      add('sahkan', B('Tetapkan baseline dan penunjuk kejayaan', 'Set the baseline and success indicators'), pic('hr'), 1, B('Baseline direkod', 'Baseline recorded'));
+      G = 'pic';
+      add('sedia', B('Lantik PIC dan seorang pengganti', 'Appoint a PIC and a back-up'), pic('superior'), 1, B('PIC dan pengganti dinamakan', 'PIC and back-up named'));
+      add('sedia', B('Catat keadaan sebelum (baseline) dan penunjuk kejayaan', 'Record the situation before (the baseline) and the success indicators'), pic('hr'), 2, B('Baseline direkod', 'Baseline recorded'));
+      G = 'baiki';
+      D.envGaps.forEach(f => add('sedia', B('Baiki persekitaran: ' + f.q.lab.m.toLowerCase(), 'Fix the environment: ' + f.q.lab.e.toLowerCase()), pic('pemilik'), 5, f.q.id === 'info' ? B('Standard dan cara maklum balas dijelaskan', 'Standard and feedback method clarified') : f.q.id === 'sumber' ? B('SOP, templat atau alat siap digunakan', 'SOP, template or tool ready for use') : B('Pengiktirafan dan susulan diselaraskan', 'Recognition and follow-up aligned')));
+      if (D.perGaps.some(f => f.q.id !== 'tahu')) add('sedia', B('Bincang 1-ke-1 (coaching) tentang kapasiti dan motif', 'Hold one-to-one coaching on capacity and motives'), pic('superior'), 5, B('Nota coaching dan tindakan dipersetujui', 'Coaching notes and agreed actions'));
+      if (isTrain) {
+        G = 'trainer';
+        add('trainer', B('Senaraikan 2 hingga 3 calon trainer (dalaman atau luar)', 'Shortlist 2 to 3 trainer candidates (internal or external)'), pic('hr'), 3, B('Senarai calon dan anggaran yuran', 'Candidate list and fee estimates'));
+        add('trainer', B('Hantar jemputan dan brif kepada calon: objektif, sasaran peserta dan tarikh cadangan', 'Send the invitation and brief to the candidates: objectives, target participants and proposed dates'), pic('hr'), 2, B('Jemputan dihantar', 'Invitation sent'));
+        add('trainer', B('Susuli jemputan sehingga ada jawapan', 'Follow up on the invitation until there is a reply'), pic('hr'), 5, B('Jawapan calon diterima', 'Candidates\' replies received'));
+        add('trainer', B('Sahkan trainer secara bertulis: tarikh, yuran dan skop', 'Confirm the trainer in writing: date, fee and scope'), pic('hr'), 3, B('E-mel atau surat pengesahan', 'Confirmation e-mail or letter'));
+        G = 'logistik';
+        add('logistik', B('Sahkan tarikh dan peserta, dan dapatkan pelepasan tugas daripada superior mereka', 'Confirm the date and participants, and get their superiors\' release from duties'), pic('hr') + ' + Superior', 5, B('Senarai peserta disahkan', 'Participant list confirmed'));
+        add('logistik', B('Tempah tempat, peralatan dan makanan', 'Book the venue, equipment and food'), pic('hr'), 3, B('Tempahan disahkan', 'Bookings confirmed'));
+        add('logistik', B('Hantar notis kepada peserta: tarikh, lokasi dan apa yang perlu disediakan', 'Send the notice to participants: date, venue and what to prepare'), pic('hr'), 2, B('Notis dihantar', 'Notice sent'));
+        G = 'trainer';
+        add('logistik', B('Brif trainer dengan isu sebenar daripada TNA supaya latihan tidak generik', 'Brief the trainer with the real issue from the TNA so the training is not generic'), pic('hr'), 1, B('Brif dihantar kepada trainer', 'Brief sent to the trainer'));
+        G = 'latih';
+        add('laksana', B('Jalankan latihan, dan rekod kehadiran serta maklum balas peserta', 'Run the training, and record attendance and participant feedback'), pic('trainer'), 1, B('Kehadiran dan maklum balas direkod', 'Attendance and feedback recorded'));
+        if (bayar) {
+          G = 'bayar';
+          add('laksana', B('Selesaikan bayaran kepada trainer atau penyedia', 'Settle the payment to the trainer or provider'), pic('hr'), 3, B('Bayaran direkod', 'Payment recorded'));
+          add('laksana', B('Edarkan sijil dan bahan kepada peserta', 'Issue certificates and materials to participants'), pic('hr'), 2, B('Sijil dan bahan diedarkan', 'Certificates and materials issued'));
+        }
+      } else {
+        G = 'notis';
+        add('laksana', B('Maklumkan perubahan kepada pasukan dan superior mereka', 'Tell the team and their superiors about the change'), pic('hr') + ' + ' + pic('pemilik'), 2, B('Maklumat dihantar kepada pasukan', 'Information sent to the team'));
+      }
     }
-    G = 'baiki'; D.envGaps.forEach(f => add('sedia', B('Baiki persekitaran: ' + f.q.lab.m.toLowerCase(), 'Fix the environment: ' + f.q.lab.e.toLowerCase()), pic('pemilik'), 5, f.q.id === 'info' ? B('Standard dan cara maklum balas dijelaskan', 'Standard and feedback method clarified') : f.q.id === 'sumber' ? B('SOP, templat atau alat siap digunakan', 'SOP, template or tool ready for use') : B('Pengiktirafan dan susulan diselaraskan', 'Recognition and follow-up aligned')));
-    G = 'coach'; if (D.perGaps.some(f => f.q.id !== 'tahu')) add('sedia', B('Bincang 1-ke-1 (coaching) tentang kapasiti dan motif', 'Hold one-to-one coaching on capacity and motives'), pic('superior'), 5, B('Nota coaching dan tindakan dipersetujui', 'Coaching notes and agreed actions'));
-    G = 'latih'; if (isTrain) add('sedia', B('Sediakan latihan: objektif, kandungan praktikal, peserta dan jadual', 'Prepare the training: objectives, practical content, participants and schedule'), pic('hr') + ' + Trainer', 5, B('Peserta dan jadual disahkan', 'Participants and schedule confirmed'));
-    G = 'putus'; if (!steps.some(s => s.fasa === 'sedia')) add('sedia', B('Putuskan penyelesaian selepas maklumat disahkan', 'Decide the solution once the information is verified'), pic('hr') + ' + Superior', 2, B('Keputusan penyelesaian direkod', 'Solution decision recorded'));
-    G = 'latih'; if (isTrain) add('laksana', B('Jalankan latihan (amalan dan maklum balas)', 'Run the training (practice and feedback)'), pic('trainer'), 1, B('Kehadiran dan hasil latihan praktikal', 'Attendance and practical exercise results'));
-    G = 'pantau'; add('laksana', isTrain ? B('Superior memantau amalan di tempat kerja selama 4 minggu', 'The superior monitors on-the-job practice for 4 weeks') : B('Superior memantau pelaksanaan pembaikan selama 4 minggu', 'The superior monitors the fixes for 4 weeks'), pic('superior'), 20, B('Senarai semak mingguan', 'Weekly checklist'));
-    G = 'semak'; add('semak', B('Semak hasil berbanding baseline', 'Compare results against the baseline'), pic('hr') + ' + Superior', 3, B('Perbandingan sebelum dan selepas', 'Before-and-after comparison'));
-    add('semak', B('Laporkan kepada superior dan putuskan langkah seterusnya', 'Report to the superior and decide the next step'), pic('hr'), 1, B('Laporan satu muka surat dan keputusan', 'One-page report and decision'));
+    if (D.fit !== 'belum' && D.fit !== 'tiada') {
+      G = 'pantau'; add('laksana', isTrain ? B('Superior memantau amalan di tempat kerja selama 4 minggu', 'The superior monitors on-the-job practice for 4 weeks') : B('Superior memantau pelaksanaan pembaikan selama 4 minggu', 'The superior monitors the fixes for 4 weeks'), pic('superior'), 20, B('Senarai semak mingguan', 'Weekly checklist'));
+      G = 'semak'; add('semak', B('Semak hasil berbanding baseline', 'Compare results against the baseline'), pic('hr') + ' + Superior', 3, B('Perbandingan sebelum dan selepas', 'Before-and-after comparison'));
+      add('semak', B('Laporkan kepada superior dan putuskan langkah seterusnya', 'Report to the superior and decide the next step'), pic('hr'), 1, B('Laporan satu muka surat dan keputusan', 'One-page report and decision'));
+    }
     let cur = start; const tasks = [];
     steps.forEach((s, i) => {
       const mula = nextBD(cur), siap = addBD(mula, Math.max(0, s.dur - 1)); cur = addBD(siap, 1);
@@ -418,14 +514,17 @@
   }
   /* mod Cepat: senarai tindakan ringkas (satu tindakan = satu kumpulan langkah). Tanda siap dikongsi dengan mod Lengkap. */
   const QTXT = {
-    sahkan: (S) => S.status === 'belum' ? B('Kumpul 5 hingga 10 contoh kejadian, sahkan punca dengan superior dan catat keadaan sebelum', 'Collect 5 to 10 incident examples, validate the causes with the superior and record the situation before') : B('Catat keadaan sebelum (baseline) sebagai ukuran kejayaan', 'Record the situation before (the baseline) as the measure of success'),
-    lulus: (S) => S.status === 'tunggu' ? B('Susuli keputusan kelulusan daripada superior', 'Follow up on the approval decision from the superior') : B('Bentang pitch kepada superior dan dapatkan keputusan bertulis', 'Present the pitch to the superior and get a written decision'),
-    baiki: (S, D) => B('Baiki persekitaran kerja: ' + D.envGaps.map(f => f.q.lab.m.toLowerCase()).join(', '), 'Fix the work environment: ' + D.envGaps.map(f => f.q.lab.e.toLowerCase()).join(', ')),
-    coach: () => B('Bincang 1-ke-1 (coaching) tentang kapasiti dan motif', 'Hold one-to-one coaching on capacity and motives'),
-    latih: () => B('Sediakan dan jalankan latihan (amalan dan maklum balas)', 'Prepare and run the training (practice and feedback)'),
-    putus: () => B('Putuskan penyelesaian selepas maklumat disahkan', 'Decide the solution once the information is verified'),
-    pantau: (S, D) => train(D) ? B('Superior memantau amalan di tempat kerja selama 4 minggu', 'The superior monitors on-the-job practice for 4 weeks') : B('Superior memantau pembaikan selama 4 minggu', 'The superior monitors the fixes for 4 weeks'),
-    semak: () => B('Semak hasil berbanding keadaan sebelum dan laporkan kepada superior', 'Compare the results with the situation before and report to the superior')
+    pic: () => B('Lantik PIC dan catat keadaan sebelum', 'Appoint a PIC and record the situation before'),
+    sahkan: (S, D) => D.fit === 'tiada' ? B('Semak semula isu dengan superior', 'Re-check the issue with the superior') : B('Kumpul contoh kejadian dan sahkan dengan superior', 'Collect incident examples and validate them with the superior'),
+    baiki: (S, D) => { const m = D.envGaps.map(f => f.q.lab.m.toLowerCase()), e = D.envGaps.map(f => f.q.lab.e.toLowerCase()); if (D.perGaps.some(f => f.q.id !== 'tahu')) { m.push('coaching 1-ke-1'); e.push('one-to-one coaching'); } return B('Baiki: ' + m.join(', '), 'Fix: ' + e.join(', ')); },
+    trainer: () => B('Jemput trainer dan susuli sehingga disahkan', 'Invite a trainer and follow up until confirmed'),
+    logistik: () => B('Sahkan tarikh, tempat dan peserta', 'Confirm the date, venue and participants'),
+    latih: () => B('Jalankan latihan dan rekod kehadiran', 'Run the training and record attendance'),
+    bayar: () => B('Selesaikan bayaran dan edarkan sijil', 'Settle payment and issue certificates'),
+    notis: () => B('Maklumkan perubahan kepada pasukan', 'Tell the team about the change'),
+    putus: () => B('Kemas kini TNA dan putuskan langkah seterusnya', 'Update the TNA and decide the next step'),
+    pantau: () => B('Superior memantau selama 4 minggu', 'The superior monitors for 4 weeks'),
+    semak: () => B('Semak hasil dan laporkan kepada superior', 'Review the results and report to the superior')
   };
   function quick(S) {
     const PL = plan(S), D = diagnose(S), order = [], map = {};
@@ -630,7 +729,7 @@
     return d;
   }
 
-  const api = { KEY, OLD_KEYS, B, REFS, DISCLAIMER, ADAPT, Q, STAT, KEPUTUSAN, KEUTAMAAN, STATUS, FASA, esc, has, cut, dOK, P, F, nextBD, addBD, fmtD, fmtShort, todayISO, defaults, validate, diagnose, tna, tnaDoc, plan, planBase, quick, mulaOf, pitch, parseBi, biText, progress, md, bl, blocksHTML, tnaHTML, pitchHTML, checklistHTML, docBody, DOC_CSS, toCSV, toICS, toDoc, aiTnaPrompt, aiScriptPrompt, exampleData, uid, fasaT, train, GRP, BIDANG, INDUSTRI, bidangOf, industriOf, kosSummary, synopsis, synopsisHTML, num, rm };
+  const api = { KEY, OLD_KEYS, B, REFS, DISCLAIMER, ADAPT, Q, STAT, KEPUTUSAN, KEUTAMAAN, STATUS, FASA, esc, has, cut, dOK, P, F, nextBD, addBD, fmtD, fmtShort, todayISO, defaults, validate, diagnose, tna, tnaDoc, plan, planBase, quick, mulaOf, pitch, parseBi, biText, progress, md, bl, blocksHTML, tnaHTML, pitchHTML, checklistHTML, docBody, DOC_CSS, toCSV, toICS, toDoc, aiTnaPrompt, aiScriptPrompt, exampleData, uid, fasaT, train, GRP, BIDANG, INDUSTRI, bidangOf, industriOf, kosSummary, synopsis, synopsisHTML, infoBlocks, aiInfoPrompt, num, rm };
   if (typeof module !== 'undefined') module.exports = api;
   root.Move = api;
 })(typeof window !== 'undefined' ? window : globalThis);

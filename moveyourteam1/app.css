@@ -410,17 +410,10 @@ select{width:100%;border:1.5px solid #d8d6cf;border-radius:10px;padding:11px 13p
 @media(max-width:980px){.row3{grid-template-columns:1fr}.sum.s4{grid-template-columns:1fr}}
 
 /* ---- mod checklist: Cepat / Lengkap ---- */
-.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 18px}
-.modes label{display:block;border:1.5px solid #d8d6cf;border-radius:12px;padding:14px 16px;cursor:pointer;background:#fff;margin:0;transition:border-color .15s,background .15s}
-.modes input{position:absolute;opacity:0;pointer-events:none}
-.modes .mt{display:block;font-size:17px}
-.modes .mt .en{font-size:12px}
-.modes .md{display:block;font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.4}
-.modes label:hover{border-color:var(--ink)}
-.modes label:has(input:checked){background:var(--ink);color:#fff;border-color:var(--ink)}
-.modes label:has(input:checked) .md{color:#d9dade}
-.modes label:has(input:checked) .en{color:#c9cbd1}
-.modes label:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+.modelink{margin:16px 0 22px;font-size:14.5px;color:var(--muted)}
+.linkbtn{background:none;border:0;padding:0;margin:0;font:inherit;font-weight:700;color:var(--red);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkbtn:hover{color:var(--ink)}
+.linkbtn:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:4px}
 .qlist{display:grid;gap:10px;margin-top:16px}
 .qa{display:grid;grid-template-columns:28px 30px minmax(0,1fr);gap:12px;align-items:start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;margin:0;transition:background .15s}
 .qa:hover{border-color:var(--ink)}
@@ -431,4 +424,4 @@ select{width:100%;border:1.5px solid #d8d6cf;border-radius:10px;padding:11px 13p
 .qa.done{background:#f1f8f4}
 .qa.done .qt b{text-decoration:line-through;color:var(--muted)}
 .qa:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
-@media(max-width:700px){.modes{grid-template-columns:1fr}.qa{grid-template-columns:26px 22px minmax(0,1fr);gap:10px;padding:13px}}
+@media(max-width:700px){.qa{grid-template-columns:26px 22px minmax(0,1fr);gap:10px;padding:13px}}
