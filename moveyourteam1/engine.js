@@ -203,7 +203,7 @@
     d.kos = clampStr(o.kos || o.masa, 300);
     const smap = { pinda: 'belum', dilatih: 'lulus' }; const st = smap[o.status] || o.status; d.status = STATUS[st] ? st : 'belum';
     d.mula = dOK(o.mula) ? o.mula : '';
-    d.mod = o.mod === 'lengkap' || (o.mod === undefined && Array.isArray(o.tasks) && o.tasks.length) ? 'lengkap' : 'cepat';
+    d.mod = o.mod === 'lengkap' ? 'lengkap' : 'cepat';
     if (o.qdone && typeof o.qdone === 'object' && !Array.isArray(o.qdone)) Object.keys(o.qdone).slice(0, 12).forEach(k => { if (o.qdone[k] === true && /^[a-z_]{1,20}$/.test(k)) d.qdone[k] = true; });
     d.nama = clampStr(typeof o.nama === 'string' ? o.nama : (o.nama && o.nama.hr) || '', 80);
     if (Array.isArray(o.tasks)) {
