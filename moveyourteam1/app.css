@@ -408,3 +408,27 @@ footer .en{color:#9ea1a8}
 .doc .syn td.det .en{font-size:11.5px}
 select{width:100%;border:1.5px solid #d8d6cf;border-radius:10px;padding:11px 13px;background:#fff;font-size:15px}
 @media(max-width:980px){.row3{grid-template-columns:1fr}.sum.s4{grid-template-columns:1fr}}
+
+/* ---- mod checklist: Cepat / Lengkap ---- */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 18px}
+.modes label{display:block;border:1.5px solid #d8d6cf;border-radius:12px;padding:14px 16px;cursor:pointer;background:#fff;margin:0;transition:border-color .15s,background .15s}
+.modes input{position:absolute;opacity:0;pointer-events:none}
+.modes .mt{display:block;font-size:17px}
+.modes .mt .en{font-size:12px}
+.modes .md{display:block;font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+.modes label:hover{border-color:var(--ink)}
+.modes label:has(input:checked){background:var(--ink);color:#fff;border-color:var(--ink)}
+.modes label:has(input:checked) .md{color:#d9dade}
+.modes label:has(input:checked) .en{color:#c9cbd1}
+.modes label:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+.qlist{display:grid;gap:10px;margin-top:16px}
+.qa{display:grid;grid-template-columns:28px 30px minmax(0,1fr);gap:12px;align-items:start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;margin:0;transition:background .15s}
+.qa:hover{border-color:var(--ink)}
+.qa input[type=checkbox]{width:22px;height:22px;accent-color:var(--ok);margin-top:1px}
+.qa .qn{font-weight:800;color:var(--red);padding-top:1px}
+.qa .qt b{font-size:15.5px;line-height:1.4;display:block}
+.qa .qt .en{margin-top:3px}
+.qa.done{background:#f1f8f4}
+.qa.done .qt b{text-decoration:line-through;color:var(--muted)}
+.qa:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+@media(max-width:700px){.modes{grid-template-columns:1fr}.qa{grid-template-columns:26px 22px minmax(0,1fr);gap:10px;padding:13px}}

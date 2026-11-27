@@ -166,7 +166,7 @@
     return {
       v: 6, ex: false, isu: '', kesan: '', pihak: '', standard: '', contoh: '',
       diag: { info: null, sumber: null, insentif: null, tahu: null, mampu: null, motif: null, bukti: null },
-      tnaAI: '', minta: [], penting: '', kos: '', status: 'belum', mula: '', nama: '',
+      tnaAI: '', minta: [], penting: '', kos: '', status: 'belum', mula: '', nama: '', mod: 'cepat', qdone: {},
       industri: '', bidang: '', bidangLain: '', kes: '', minit: '', kadar: '', yuran: '', peserta: '', jam: '', kurang: '',
       tasks: null, tasksSig: '', skripEdit: '', lama: null
     };
@@ -203,11 +203,13 @@
     d.kos = clampStr(o.kos || o.masa, 300);
     const smap = { pinda: 'belum', dilatih: 'lulus' }; const st = smap[o.status] || o.status; d.status = STATUS[st] ? st : 'belum';
     d.mula = dOK(o.mula) ? o.mula : '';
+    d.mod = o.mod === 'lengkap' || (o.mod === undefined && Array.isArray(o.tasks) && o.tasks.length) ? 'lengkap' : 'cepat';
+    if (o.qdone && typeof o.qdone === 'object' && !Array.isArray(o.qdone)) Object.keys(o.qdone).slice(0, 12).forEach(k => { if (o.qdone[k] === true && /^[a-z_]{1,20}$/.test(k)) d.qdone[k] = true; });
     d.nama = clampStr(typeof o.nama === 'string' ? o.nama : (o.nama && o.nama.hr) || '', 80);
     if (Array.isArray(o.tasks)) {
       d.tasks = o.tasks.filter(x => x && typeof x.tugas === 'string').slice(0, 30).map(x => ({
         id: clampStr(x.id, 20) || uid(), fasa: clampStr(x.fasa, 80), tugas: clampStr(x.tugas, 300), te: clampStr(x.te, 300), pic: clampStr(x.pic, 120),
-        mula: dOK(x.mula) ? x.mula : '', siap: dOK(x.siap) ? x.siap : '', bukti: clampStr(x.bukti, 300), be: clampStr(x.be, 300), dep: clampStr(x.dep, 40), done: x.done === true
+        mula: dOK(x.mula) ? x.mula : '', siap: dOK(x.siap) ? x.siap : '', bukti: clampStr(x.bukti, 300), be: clampStr(x.be, 300), dep: clampStr(x.dep, 40), done: x.done === true, grp: clampStr(x.grp, 24)
       }));
       d.tasksSig = clampStr(o.tasksSig, 600);
     }
@@ -297,7 +299,7 @@
     else sec.push({ h: B('3. Kos terlibat', '3. Costs involved'), paras: [B('Kos belum dikira kerana angka belum diisi. Isi bilangan kes sebulan, masa hilang setiap kes dan kos sejam purata (langkah TNA), serta yuran, bilangan peserta dan jam latihan (langkah PITCH). Planner hanya mengira daripada angka anda dan tidak menganggar sendiri.', 'Costs are not yet calculated because the figures are blank. Fill in cases per month, time lost per case and average cost per hour (TNA step), plus fees, number of participants and training hours (PITCH step). The planner only calculates from your figures and never estimates on its own.')] });
     sec.push({ h: B('4. Hasil dan cara menilai', '4. Results and how to measure'), paras: [B('Standard yang dimahukan: ' + trim(val(S.standard, 'belum diisi')) + '. Superior menyemak 5 hingga 10 contoh kerja pada minggu 2 dan 4, dan kami membandingkan keadaan sebelum dan selepas (Kirkpatrick tahap 3 dan 4).', 'Desired standard: ' + trim(val(S.standard, 'not filled in')) + '. The superior reviews 5 to 10 work samples in weeks 2 and 4, and we compare before and after (Kirkpatrick levels 3 and 4).')] });
     sec.push({ h: B('5. Kekuatan bukti', '5. Strength of evidence'), paras: [B(D.evidence.label.m.charAt(0).toUpperCase() + D.evidence.label.m.slice(1) + '. ' + D.evidence.text.m, D.evidence.label.e.charAt(0).toUpperCase() + D.evidence.label.e.slice(1) + '. ' + D.evidence.text.e)] });
-    const kep = S.minta.length ? S.minta.map(k => KEPUTUSAN[k]) : null, mulaT = PL.mula ? fmtD(PL.mula) : null;
+    const kep = S.minta.length ? S.minta.map(k => KEPUTUSAN[k]) : null, mulaT = mulaOf(S, PL) ? fmtD(PL.mula) : null;
     sec.push({ h: B('6. Keputusan diminta', '6. Decision requested'), paras: [B((kep ? kep.map(x => trim(x.m)).join('; ') : 'Belum dipilih (lihat langkah PITCH)') + '. Tarikh mula: ' + (mulaT || 'belum ditetapkan') + '.', (kep ? kep.map(x => trim(x.e)).join('; ') : 'Not yet chosen (see the PITCH step)') + '. Start date: ' + (mulaT || 'not yet set') + '.')] });
     const rk = [], re = [];
     if (D.fit === 'latihan' || D.fit === 'campuran') { rk.push('Latihan tidak akan bertahan tanpa semakan superior di tempat kerja.'); re.push('Training will not last without superior follow-up on the job.'); }
@@ -378,40 +380,62 @@
   function planBase(S) {
     const D = diagnose(S), warns = [], guessed = !dOK(S.mula);
     const start = nextBD(P(guessed ? todayISO() : S.mula)), pic = r => picName(S, r), isTrain = train(D);
-    const steps = [];
-    const add = (fasa, t, who, dur, bk) => steps.push({ fasa, t, pic: who, dur, bk });
+    const steps = []; let G = 'sahkan';
+    const add = (fasa, t, who, dur, bk) => steps.push({ fasa, t, pic: who, dur, bk, grp: G });
     if (S.status === 'belum') {
       add('sahkan', B('Kumpul 5 hingga 10 contoh kejadian dan rekod', 'Collect 5 to 10 incident examples and records'), pic('hr'), 3, B('Senarai contoh dan rekod', 'List of examples and records'));
       add('sahkan', B('Sahkan punca bersama superior dan pemilik proses', 'Validate the root causes with the superior and process owner'), pic('hr') + ' + Superior', 2, B('Nota perbincangan; punca disahkan', 'Discussion notes; causes validated'));
       add('sahkan', B('Tetapkan baseline dan penunjuk kejayaan', 'Set the baseline and success indicators'), pic('hr'), 1, B('Baseline direkod', 'Baseline recorded'));
-      add('lulus', B('Bentang pitch kepada superior', 'Present the pitch to the superior'), pic('hr'), 1, B('Cadangan dibentang', 'Proposal presented'));
+      G = 'lulus'; add('lulus', B('Bentang pitch kepada superior', 'Present the pitch to the superior'), pic('hr'), 1, B('Cadangan dibentang', 'Proposal presented'));
       add('lulus', B('Terima keputusan bertulis dan lantik PIC', 'Receive the written decision and appoint a PIC'), pic('superior'), 3, B('E-mel atau memo kelulusan', 'Approval e-mail or memo'));
     } else if (S.status === 'tunggu') {
-      add('lulus', B('Susulan keputusan kelulusan', 'Follow up on the approval decision'), pic('hr'), 5, B('Keputusan bertulis diterima', 'Written decision received'));
+      G = 'lulus'; add('lulus', B('Susulan keputusan kelulusan', 'Follow up on the approval decision'), pic('hr'), 5, B('Keputusan bertulis diterima', 'Written decision received'));
     } else {
       add('sahkan', B('Tetapkan baseline dan penunjuk kejayaan', 'Set the baseline and success indicators'), pic('hr'), 1, B('Baseline direkod', 'Baseline recorded'));
     }
-    D.envGaps.forEach(f => add('sedia', B('Baiki persekitaran: ' + f.q.lab.m.toLowerCase(), 'Fix the environment: ' + f.q.lab.e.toLowerCase()), pic('pemilik'), 5, f.q.id === 'info' ? B('Standard dan cara maklum balas dijelaskan', 'Standard and feedback method clarified') : f.q.id === 'sumber' ? B('SOP, templat atau alat siap digunakan', 'SOP, template or tool ready for use') : B('Pengiktirafan dan susulan diselaraskan', 'Recognition and follow-up aligned')));
-    if (D.perGaps.some(f => f.q.id !== 'tahu')) add('sedia', B('Bincang 1-ke-1 (coaching) tentang kapasiti dan motif', 'Hold one-to-one coaching on capacity and motives'), pic('superior'), 5, B('Nota coaching dan tindakan dipersetujui', 'Coaching notes and agreed actions'));
-    if (isTrain) add('sedia', B('Sediakan latihan: objektif, kandungan praktikal, peserta dan jadual', 'Prepare the training: objectives, practical content, participants and schedule'), pic('hr') + ' + Trainer', 5, B('Peserta dan jadual disahkan', 'Participants and schedule confirmed'));
-    if (!steps.some(s => s.fasa === 'sedia')) add('sedia', B('Putuskan penyelesaian selepas maklumat disahkan', 'Decide the solution once the information is verified'), pic('hr') + ' + Superior', 2, B('Keputusan penyelesaian direkod', 'Solution decision recorded'));
-    if (isTrain) add('laksana', B('Jalankan latihan (amalan dan maklum balas)', 'Run the training (practice and feedback)'), pic('trainer'), 1, B('Kehadiran dan hasil latihan praktikal', 'Attendance and practical exercise results'));
-    add('laksana', isTrain ? B('Superior memantau amalan di tempat kerja selama 4 minggu', 'The superior monitors on-the-job practice for 4 weeks') : B('Superior memantau pelaksanaan pembaikan selama 4 minggu', 'The superior monitors the fixes for 4 weeks'), pic('superior'), 20, B('Senarai semak mingguan', 'Weekly checklist'));
-    add('semak', B('Semak hasil berbanding baseline', 'Compare results against the baseline'), pic('hr') + ' + Superior', 3, B('Perbandingan sebelum dan selepas', 'Before-and-after comparison'));
+    G = 'baiki'; D.envGaps.forEach(f => add('sedia', B('Baiki persekitaran: ' + f.q.lab.m.toLowerCase(), 'Fix the environment: ' + f.q.lab.e.toLowerCase()), pic('pemilik'), 5, f.q.id === 'info' ? B('Standard dan cara maklum balas dijelaskan', 'Standard and feedback method clarified') : f.q.id === 'sumber' ? B('SOP, templat atau alat siap digunakan', 'SOP, template or tool ready for use') : B('Pengiktirafan dan susulan diselaraskan', 'Recognition and follow-up aligned')));
+    G = 'coach'; if (D.perGaps.some(f => f.q.id !== 'tahu')) add('sedia', B('Bincang 1-ke-1 (coaching) tentang kapasiti dan motif', 'Hold one-to-one coaching on capacity and motives'), pic('superior'), 5, B('Nota coaching dan tindakan dipersetujui', 'Coaching notes and agreed actions'));
+    G = 'latih'; if (isTrain) add('sedia', B('Sediakan latihan: objektif, kandungan praktikal, peserta dan jadual', 'Prepare the training: objectives, practical content, participants and schedule'), pic('hr') + ' + Trainer', 5, B('Peserta dan jadual disahkan', 'Participants and schedule confirmed'));
+    G = 'putus'; if (!steps.some(s => s.fasa === 'sedia')) add('sedia', B('Putuskan penyelesaian selepas maklumat disahkan', 'Decide the solution once the information is verified'), pic('hr') + ' + Superior', 2, B('Keputusan penyelesaian direkod', 'Solution decision recorded'));
+    G = 'latih'; if (isTrain) add('laksana', B('Jalankan latihan (amalan dan maklum balas)', 'Run the training (practice and feedback)'), pic('trainer'), 1, B('Kehadiran dan hasil latihan praktikal', 'Attendance and practical exercise results'));
+    G = 'pantau'; add('laksana', isTrain ? B('Superior memantau amalan di tempat kerja selama 4 minggu', 'The superior monitors on-the-job practice for 4 weeks') : B('Superior memantau pelaksanaan pembaikan selama 4 minggu', 'The superior monitors the fixes for 4 weeks'), pic('superior'), 20, B('Senarai semak mingguan', 'Weekly checklist'));
+    G = 'semak'; add('semak', B('Semak hasil berbanding baseline', 'Compare results against the baseline'), pic('hr') + ' + Superior', 3, B('Perbandingan sebelum dan selepas', 'Before-and-after comparison'));
     add('semak', B('Laporkan kepada superior dan putuskan langkah seterusnya', 'Report to the superior and decide the next step'), pic('hr'), 1, B('Laporan satu muka surat dan keputusan', 'One-page report and decision'));
     let cur = start; const tasks = [];
     steps.forEach((s, i) => {
       const mula = nextBD(cur), siap = addBD(mula, Math.max(0, s.dur - 1)); cur = addBD(siap, 1);
-      tasks.push({ id: 't' + (i + 1), fasa: s.fasa, tugas: s.t.m, te: s.t.e, pic: s.pic, mula: F(mula), siap: F(siap), bukti: s.bk.m, be: s.bk.e, dep: i ? 't' + i : '', done: false });
+      tasks.push({ id: 't' + (i + 1), fasa: s.fasa, tugas: s.t.m, te: s.t.e, pic: s.pic, mula: F(mula), siap: F(siap), bukti: s.bk.m, be: s.bk.e, dep: i ? 't' + i : '', done: false, grp: s.grp });
     });
     if (guessed) warns.push({ kind: 'info', m: 'Tarikh mula belum diisi, jadi checklist bermula ' + fmtD(F(start)) + '. Pilih tarikh mula untuk menyusun semula.', e: 'No start date set, so the checklist begins on ' + fmtD(F(start)) + '. Pick a start date to reschedule.' });
     return { tasks, warns, guessed };
   }
   function plan(S) {
-    const b = planBase(S), tasks = S.tasks && S.tasks.length ? S.tasks : b.tasks;
+    const b = planBase(S), own = S.tasks && S.tasks.length, qd = S.qdone || {}, gm = {};
+    b.tasks.forEach(t => { gm[t.tugas] = t.grp; });
+    const tasks = own ? S.tasks.map(t => t.grp ? t : Object.assign({}, t, { grp: gm[t.tugas] || '' })) : b.tasks.map(t => qd[t.grp] ? Object.assign({}, t, { done: true }) : t);
     const dates = tasks.flatMap(t => [t.mula, t.siap]).filter(dOK).sort(), done = tasks.filter(t => t.done).length;
     return { tasks, warns: b.warns, guessed: b.guessed, mula: dates[0] || '', tamat: dates[dates.length - 1] || '', done, total: tasks.length, pct: tasks.length ? Math.round(done / tasks.length * 100) : 0 };
   }
+  /* mod Cepat: senarai tindakan ringkas (satu tindakan = satu kumpulan langkah). Tanda siap dikongsi dengan mod Lengkap. */
+  const QTXT = {
+    sahkan: (S) => S.status === 'belum' ? B('Kumpul 5 hingga 10 contoh kejadian, sahkan punca dengan superior dan catat keadaan sebelum', 'Collect 5 to 10 incident examples, validate the causes with the superior and record the situation before') : B('Catat keadaan sebelum (baseline) sebagai ukuran kejayaan', 'Record the situation before (the baseline) as the measure of success'),
+    lulus: (S) => S.status === 'tunggu' ? B('Susuli keputusan kelulusan daripada superior', 'Follow up on the approval decision from the superior') : B('Bentang pitch kepada superior dan dapatkan keputusan bertulis', 'Present the pitch to the superior and get a written decision'),
+    baiki: (S, D) => B('Baiki persekitaran kerja: ' + D.envGaps.map(f => f.q.lab.m.toLowerCase()).join(', '), 'Fix the work environment: ' + D.envGaps.map(f => f.q.lab.e.toLowerCase()).join(', ')),
+    coach: () => B('Bincang 1-ke-1 (coaching) tentang kapasiti dan motif', 'Hold one-to-one coaching on capacity and motives'),
+    latih: () => B('Sediakan dan jalankan latihan (amalan dan maklum balas)', 'Prepare and run the training (practice and feedback)'),
+    putus: () => B('Putuskan penyelesaian selepas maklumat disahkan', 'Decide the solution once the information is verified'),
+    pantau: (S, D) => train(D) ? B('Superior memantau amalan di tempat kerja selama 4 minggu', 'The superior monitors on-the-job practice for 4 weeks') : B('Superior memantau pembaikan selama 4 minggu', 'The superior monitors the fixes for 4 weeks'),
+    semak: () => B('Semak hasil berbanding keadaan sebelum dan laporkan kepada superior', 'Compare the results with the situation before and report to the superior')
+  };
+  function quick(S) {
+    const PL = plan(S), D = diagnose(S), order = [], map = {};
+    PL.tasks.forEach(t => { const k = t.grp || 'x_' + t.id; if (!map[k]) { map[k] = []; order.push(k); } map[k].push(t); });
+    const items = order.map(k => { const ts = map[k], tx = QTXT[k] ? QTXT[k](S, D) : B(ts[0].tugas, ts[0].te || ''); return { key: k, m: tx.m, e: tx.e, n: ts.length, done: ts.every(t => t.done) }; });
+    const done = items.filter(i => i.done).length;
+    return { items, done, total: items.length, pct: items.length ? Math.round(done / items.length * 100) : 0 };
+  }
+  /* tarikh mula hanya dipaparkan dalam mod Cepat jika peserta memilihnya sendiri */
+  const mulaOf = (S, PL) => (S.mod === 'lengkap' || dOK(S.mula)) ? ((PL || plan(S)).mula || '') : '';
 
   /* ---------- skrip dua bahasa ---------- */
   function parseBi(text) {
@@ -428,7 +452,7 @@
   function pitch(S) {
     const T = tna(S), D = diagnose(S), PL = plan(S);
     const kep = S.minta.length ? S.minta.map(k => KEPUTUSAN[k]) : [B('(pilih keputusan yang anda mahu minta)', '(choose the decision you want to request)')];
-    const mulaT = PL.mula ? fmtD(PL.mula) : null;
+    const mulaT = mulaOf(S, PL) ? fmtD(PL.mula) : null;
     const tip = S.penting ? { m: KEUTAMAAN[S.penting].m + ': ' + FRAMING[S.penting].m, e: KEUTAMAAN[S.penting].e + ': ' + FRAMING[S.penting].e } : B('Pilih apa yang paling dipentingkan oleh superior anda untuk mendapat petua membingkai cadangan.', 'Choose what matters most to your superior to get a tip on framing the proposal.');
     const KS = kosSummary(S), kosM = KS.ringkas.m, kosE = KS.ringkas.e;
     const top3 = T.intervensi.slice(0, 3);
@@ -466,7 +490,7 @@
   /* ---------- kemajuan ---------- */
   function progress(S) {
     const answered = Object.entries(S.diag).filter(([k, v]) => k !== 'bukti' && v !== null).length;
-    return { tna: has(S.isu) && has(S.contoh) && has(S.standard) && answered >= 4, pitch: S.minta.length > 0, plan: dOK(S.mula) };
+    return { tna: has(S.isu) && has(S.contoh) && has(S.standard) && answered >= 4, pitch: S.minta.length > 0, plan: S.mod === 'lengkap' ? dOK(S.mula) : quick(S).done > 0 };
   }
 
   /* ---------- markdown AI + render blok ---------- */
@@ -512,6 +536,11 @@
   /* ---------- eksport ---------- */
   const fasaT = k => FASA[k] ? FASA[k] : B(k, '');
   function toCSV(S) {
+    if (S.mod !== 'lengkap') {
+      const Q = quick(S), qq = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+      const rows = [['No', 'Tindakan / Action', 'Action (English)', 'Siap? / Done?']].concat(Q.items.map((x, i) => [i + 1, x.m, x.e, x.done ? 'Ya / Yes' : 'Belum / Not yet']));
+      return '\uFEFF' + rows.map(r => r.map(qq).join(',')).join('\r\n');
+    }
     const PL = plan(S), q = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
     const num = id => { const i = PL.tasks.findIndex(x => x.id === id); return i >= 0 ? String(i + 1) : ''; };
     const rows = [['No', 'Fasa / Phase', 'Tugasan / Task', 'Task (English)', 'PIC', 'Mula / Start', 'Siap / Due', 'Bukti / Evidence', 'Evidence (English)', 'Selepas tugasan no. / After task no.', 'Siap? / Done?']];
@@ -533,9 +562,14 @@
     return L.map(fold).join('\r\n') + '\r\n';
   }
   function checklistHTML(S) {
+    if (S.mod !== 'lengkap') {
+      const Q = quick(S);
+      return '<table><thead><tr><th>No</th><th>' + bl(B('Tindakan', 'Action')) + '</th><th>' + bl(B('Siap', 'Done')) + '</th></tr></thead><tbody>' +
+        Q.items.map((x, i) => '<tr><td>' + (i + 1) + '</td><td>' + bl({ m: x.m, e: x.e }) + '</td><td>' + (x.done ? '☑' : '☐') + '</td></tr>').join('') + '</tbody></table>';
+    }
     const PL = plan(S);
     return '<table><thead><tr><th>No</th><th>' + bl(B('Tugasan', 'Task')) + '</th><th>PIC</th><th>' + bl(B('Siap', 'Due')) + '</th><th>' + bl(B('Bukti', 'Evidence')) + '</th></tr></thead><tbody>' +
-      PL.tasks.map((t, i) => '<tr><td>☐ ' + (i + 1) + '</td><td>' + bl({ m: t.tugas, e: t.te }) + '</td><td>' + esc(t.pic) + '</td><td>' + esc(fmtD(t.siap)) + '</td><td>' + bl({ m: t.bukti, e: t.be }) + '</td></tr>').join('') + '</tbody></table>';
+      PL.tasks.map((t, i) => '<tr><td>' + (t.done ? '☑ ' : '☐ ') + (i + 1) + '</td><td>' + bl({ m: t.tugas, e: t.te }) + '</td><td>' + esc(t.pic) + '</td><td>' + esc(fmtD(t.siap)) + '</td><td>' + bl({ m: t.bukti, e: t.be }) + '</td></tr>').join('') + '</tbody></table>';
   }
   function pitchHTML(S) {
     const PI = pitch(S), ul = a => '<ul>' + a.map(x => '<li>' + esc(x.m) + (x.e ? '<br><i class="en">' + esc(x.e) + '</i>' : '') + '</li>').join('') + '</ul>';
@@ -596,7 +630,7 @@
     return d;
   }
 
-  const api = { KEY, OLD_KEYS, B, REFS, DISCLAIMER, ADAPT, Q, STAT, KEPUTUSAN, KEUTAMAAN, STATUS, FASA, esc, has, cut, dOK, P, F, nextBD, addBD, fmtD, fmtShort, todayISO, defaults, validate, diagnose, tna, tnaDoc, plan, planBase, pitch, parseBi, biText, progress, md, bl, blocksHTML, tnaHTML, pitchHTML, checklistHTML, docBody, DOC_CSS, toCSV, toICS, toDoc, aiTnaPrompt, aiScriptPrompt, exampleData, uid, fasaT, train, GRP, BIDANG, INDUSTRI, bidangOf, industriOf, kosSummary, synopsis, synopsisHTML, num, rm };
+  const api = { KEY, OLD_KEYS, B, REFS, DISCLAIMER, ADAPT, Q, STAT, KEPUTUSAN, KEUTAMAAN, STATUS, FASA, esc, has, cut, dOK, P, F, nextBD, addBD, fmtD, fmtShort, todayISO, defaults, validate, diagnose, tna, tnaDoc, plan, planBase, quick, mulaOf, pitch, parseBi, biText, progress, md, bl, blocksHTML, tnaHTML, pitchHTML, checklistHTML, docBody, DOC_CSS, toCSV, toICS, toDoc, aiTnaPrompt, aiScriptPrompt, exampleData, uid, fasaT, train, GRP, BIDANG, INDUSTRI, bidangOf, industriOf, kosSummary, synopsis, synopsisHTML, num, rm };
   if (typeof module !== 'undefined') module.exports = api;
   root.Move = api;
 })(typeof window !== 'undefined' ? window : globalThis);

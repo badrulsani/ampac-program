@@ -29,7 +29,11 @@ APA YANG BERUBAH DARIPADA 5.0
 - Rujukan: hanya sumber yang disahkan wujud (Gilbert, Mager & Pipe, Goldstein & Ford, Kirkpatrick,
   Anderson & Krathwohl, Michie et al. COM-B, ATD, CIPD, ROI Institute, Salas et al., Baldwin & Ford,
   Locke & Latham, Gollwitzer & Sheeran). AI dibenarkan merujuk senarai itu sahaja.
-- Checklist: senarai langkah mengikut fasa, dengan PIC, tarikh siap dan bukti. Boleh ditanda dan disunting.
+- CHECKLIST ada dua mod (suis di atas skrin):
+  CEPAT (lalai): senarai kira-kira 6 hingga 7 tindakan dengan kotak tanda. Tiada apa untuk diisi.
+  LENGKAP: checklist terperinci dengan fasa, PIC, tarikh, bukti, kalendar (.ics). Semua boleh disunting.
+  Tanda siap dikongsi antara dua mod. Dalam mod Cepat, tiada tarikh direka: tarikh mula hanya
+  muncul jika peserta memilihnya dalam mod Lengkap. Fail Word, Excel dan slaid mengikut mod yang dipilih.
 - AI (pilihan): butang di TNA (dokumen penuh) dan di PITCH (skrip). Salin prompt ke ChatGPT atau Claude,
   tampal jawapan. Tiada JSON.
 - Penafian di bahagian paling bawah dan dalam setiap fail yang dimuat turun.
@@ -50,7 +54,8 @@ UJI SEBELUM PROGRAM (10 minit, guna telefon DAN laptop)
 2. Pergi ke Pelan Saya. Muat turun Word, slaid dan Excel. Buka satu fail setiap jenis.
 3. Cuba satu kali butang AI di TNA: salin prompt ke ChatGPT atau Claude, tampal jawapan, dan pastikan
    dokumen dipaparkan dengan teks English italik.
-4. Tanda satu langkah siap dan pastikan kemajuan berubah.
+4. Dalam CHECKLIST (mod Cepat), tanda satu tindakan siap dan pastikan kemajuan berubah. Tukar ke Lengkap
+   dan pastikan tanda itu kekal.
 
 PERHATIAN
 - Data disimpan dalam pelayar peranti masing-masing. Galakkan peserta memuat turun fail sebelum pergi.

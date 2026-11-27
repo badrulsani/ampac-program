@@ -24,7 +24,12 @@ function save() {
 }
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) { }
 const sig = () => JSON.stringify([S.status, S.mula, S.nama, S.diag]);
-function ensureTasks() { if (!S.tasks) { S.tasks = M.plan(S).tasks.map(t => Object.assign({}, t)); S.tasksSig = sig(); } }
+function ensureTasks() { if (!S.tasks) { S.tasks = M.plan(S).tasks.map(t => Object.assign({}, t)); S.tasksSig = sig(); S.qdone = {}; } }
+function qToggle(key, on) {
+  if (S.tasks && S.tasks.length) { const gm = {}; M.plan(S).tasks.forEach(t => { gm[t.id] = t.grp || 'x_' + t.id; }); S.tasks.forEach(x => { if (gm[x.id] === key) x.done = on; }); }
+  else { S.qdone = S.qdone || {}; if (on) S.qdone[key] = true; else delete S.qdone[key]; }
+}
+const prog = () => S.mod === 'lengkap' ? M.plan(S) : M.quick(S);
 
 /* ---------- utiliti UI ---------- */
 function toast(v) { const t = $('#toast'); t.innerHTML = v; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 4500); }
@@ -65,7 +70,7 @@ function seg(q) {
   return `<div class="q" role="radiogroup" aria-labelledby="${q.id}-l"><p id="${q.id}-l">${bx(q.t)}</p><small>${bx(q.h)}</small><div class="seg">${o.map(([v, m, e]) => `<label><input type="radio" name="${q.id}" data-d="${q.id}" value="${v}" ${(cur === null && v === 'x') ? 'checked' : String(cur) === v ? 'checked' : ''}><span>${esc(m)}<i class="en blk">${e}</i></span></label>`).join('')}</div></div>`;
 }
 function stepper(r) {
-  const pg = M.progress(S), items = [['tna', 'TNA', B('Kenal pasti punca', 'Find the cause'), pg.tna], ['pitch', 'PITCH', B('Bentang kepada superior', 'Present to the superior'), pg.pitch], ['plan', 'CHECKLIST', B('Senarai semak bertarikh', 'Dated checklist'), pg.plan], ['hasil', B('Pelan Saya', 'My plan').m, B('Muat turun', 'Download'), null]];
+  const pg = M.progress(S), items = [['tna', 'TNA', B('Kenal pasti punca', 'Find the cause'), pg.tna], ['pitch', 'PITCH', B('Bentang kepada superior', 'Present to the superior'), pg.pitch], ['plan', 'CHECKLIST', B('Senarai tindakan', 'Action list'), pg.plan], ['hasil', B('Pelan Saya', 'My plan').m, B('Muat turun', 'Download'), null]];
   $('#stepper .wrap').innerHTML = items.map(([k, a, b, d], i) => `<a href="#${k}" class="${r === k ? 'on' : ''} ${d && r !== k ? 'done' : ''}" ${r === k ? 'aria-current="step"' : ''}><span class="n">${d && r !== k ? '✓' : i + 1}</span><span><b>${esc(a)}</b><small>${esc(b.m)} <i class="en">${esc(b.e)}</i></small></span></a>`).join('');
 }
 const pill = f => { const v = f.v, c = v === null ? 'na' : v === 2 ? 'ok' : v === 1 ? 'mid' : 'low', s = M.STAT[v === null ? 'n' : v]; return `<span class="pill ${c}"><small>${esc(f.q.lab.m)} <i class="en">${esc(f.q.lab.e)}</i></small><b>${esc(s.m)} <i class="en">${esc(s.e)}</i></b></span>`; };
@@ -76,14 +81,14 @@ function pageMula() {
   return `<div class="wrap"><div class="hero1">
     <p class="eyebrow">MOVE YOUR TEAM · Planner</p>
     <h1>Satu cabaran.<br><em>Satu pelan.</em><span class="enh">One challenge. One plan.</span></h1>
-    <p class="intro">Jawab soalan berpandu tentang satu isu kerja. Planner menyusun analisis keperluan latihan (TNA), bahan pitch kepada superior, dan checklist bertarikh.<i class="en blk">Answer guided questions about one work issue. The planner builds a Training Needs Analysis (TNA), pitch material for your superior, and a dated checklist.</i></p>
+    <p class="intro">Jawab soalan berpandu tentang satu isu kerja. Planner menyusun analisis keperluan latihan (TNA), bahan pitch kepada superior, dan senarai tindakan.<i class="en blk">Answer guided questions about one work issue. The planner builds a Training Needs Analysis (TNA), pitch material for your superior, and an action list.</i></p>
     <div class="cta-row"><a class="btn primary" href="#tna">${started ? bi('Sambung pelan saya', 'Continue my plan') : bi('Mula dengan isu saya', 'Start with my issue')} →</a><button class="btn" data-a="example">${bi('Cuba dengan contoh', 'Try an example')}</button></div>
     ${started ? `<div class="resume"><div><b>${bi('Draf anda masih ada.', 'Your draft is still here.')}</b>${S.lama ? '<br><small>' + bi('Data planner lama telah dibawa masuk.', 'Data from the old planner was imported.') + '</small>' : ''}</div><a class="btn sm" href="#hasil">${bi('Lihat Pelan Saya', 'View my plan')}</a></div>` : ''}
   </div>
   <div class="how">
     <div class="card"><span class="no">1 · TNA · ±25 ${bi('MINIT', 'MIN')}</span><h3>${bi('Apa punca sebenar?', 'What is the real cause?')}</h3><p>${bib('Lima soalan tentang isu, tujuh semakan berasaskan kerangka Gilbert. Dokumen TNA dijana.', 'Five questions on the issue, seven checks based on Gilbert\'s framework. A TNA document is generated.')}</p></div>
     <div class="card"><span class="no">2 · PITCH · ±15 ${bi('MINIT', 'MIN')}</span><h3>${bi('Apa nak diminta?', 'What to ask for?')}</h3><p>${bib('Pilih keputusan yang anda mahu. Skrip dan slaid siap.', 'Choose the decision you want. Script and slides are ready.')}</p></div>
-    <div class="card"><span class="no">3 · CHECKLIST · ±15 ${bi('MINIT', 'MIN')}</span><h3>${bi('Apa langkah seterusnya?', 'What are the next steps?')}</h3><p>${bib('Langkah dengan PIC (Person In Charge), tarikh dan bukti siap.', 'Steps with a PIC (Person In Charge), due dates and proof of completion.')}</p></div></div>
+    <div class="card"><span class="no">3 · CHECKLIST · ±2 ${bi('MINIT', 'MIN')}</span><h3>${bi('Apa langkah seterusnya?', 'What are the next steps?')}</h3><p>${bib('Senarai tindakan untuk ditanda siap. Mahu PIC (Person In Charge), tarikh dan bukti? Pilih mod Lengkap.', 'An action list to tick off. Want a PIC (Person In Charge), due dates and proof? Choose the Detailed mode.')}</p></div></div>
   <p class="privacy">${bib('Peribadi: semua jawapan disimpan dalam pelayar (browser) anda sahaja. Guna contoh tanpa nama. Planner ini berfungsi tanpa AI.', 'Private: all answers are stored in your browser only. Use examples without names. The planner works without AI.')}</p></div>`;
 }
 
@@ -168,6 +173,22 @@ function taskRow(t, i) {
   <div><input type="date" data-t="${esc(t.id)}" data-k="siap" value="${esc(t.siap)}" aria-label="Siap pada / Due ${i + 1}"></div>
   <button class="del" data-a="del-task" data-id="${esc(t.id)}" aria-label="Buang / Remove ${i + 1}" title="Buang / Remove">✕</button></div>`;
 }
+const staleHTML = () => (S.tasks && S.tasksSig && S.tasksSig !== sig()) ? '<div class="warn">' + bib('Anda telah menyunting checklist, dan tetapan di atas berubah selepas itu.', 'You edited the checklist, and the settings above changed afterwards.') + ' <button class="btn sm" data-a="regen">' + bi('Jana semula', 'Regenerate') + '</button></div>' : '';
+function modeSwitch() {
+  const o = [['cepat', 'Cepat', 'Quick', 'Senarai tindakan. Tanda bila siap. Tiada apa untuk diisi.', 'An action list. Tick when done. Nothing to fill in.'], ['lengkap', 'Lengkap', 'Detailed', 'PIC, tarikh, bukti dan kalendar. Semua boleh disunting.', 'PIC, due dates, proof and a calendar. Everything is editable.']];
+  return `<div class="modes" role="radiogroup" aria-label="Mod / Mode">${o.map(([v, m, e, dm, de]) => `<label><input type="radio" name="mod" data-f="mod" value="${v}" ${S.mod === v ? 'checked' : ''}><span class="mt"><b>${m}</b> <i class="en">${e}</i></span><span class="md">${dm}<i class="en blk">${de}</i></span></label>`).join('')}</div>`;
+}
+const qRow = (x, i) => `<label class="qa ${x.done ? 'done' : ''}"><input type="checkbox" data-q="${esc(x.key)}" ${x.done ? 'checked' : ''}><span class="qn">${i + 1}</span><span class="qt"><b>${esc(x.m)}</b>${x.e ? `<i class="en blk">${esc(x.e)}</i>` : ''}</span></label>`;
+function pageCepat() {
+  const Q = M.quick(S);
+  return `<div class="wrap"><p class="eyebrow">${bi('Langkah 3 daripada 3', 'Step 3 of 3')} · CHECKLIST</p><h1>Apa yang perlu <em>dibuat?</em><span class="enh">What needs to be done?</span></h1>
+  <p class="intro">${bib('Tanda setiap tindakan bila ia siap. Tiada apa untuk diisi.', 'Tick each action when it is done. Nothing to fill in.')}</p>${modeSwitch()}
+  <div id="plan-warn">${staleHTML()}</div>
+  <div class="card"><div class="plan-head"><h2>${bi('Tindakan anda', 'Your actions')}</h2><b id="qsum">${Q.done} / ${Q.total} ${bi('siap', 'done')}</b></div><div class="progress-bar"><i id="qbar" style="width:${Q.pct}%"></i></div>
+    <div class="qlist" id="qlist">${Q.items.map(qRow).join('')}</div>
+    <p class="hint" style="margin-top:14px">${bib('Mahu tarikh, PIC dan kalendar? Pilih Lengkap di atas. Tanda siap anda kekal.', 'Want due dates, a PIC and a calendar? Choose Detailed above. Your ticks are kept.')}</p></div>
+  <div class="nav-row"><a class="btn" href="#pitch">← PITCH</a><a class="btn primary" href="#hasil">${bi('Lihat Pelan Saya', 'View my plan')} →</a></div></div>`;
+}
 function planDyn() {
   const PL = M.plan(S), stale = S.tasks && S.tasksSig && S.tasksSig !== sig();
   let last = null, html = '';
@@ -177,10 +198,11 @@ function planDyn() {
     tasks: html, sum: PL.mula ? `<b>${esc(M.fmtD(PL.mula))}</b> → <b>${esc(M.fmtD(PL.tamat))}</b> · ${PL.total} ${bi('langkah', 'steps')}` : ''
   };
 }
-function pagePlan() {
+function pagePlan() { return S.mod === 'lengkap' ? pageLengkap() : pageCepat(); }
+function pageLengkap() {
   const D = planDyn();
   return `<div class="wrap"><p class="eyebrow">${bi('Langkah 3 daripada 3', 'Step 3 of 3')} · CHECKLIST</p><h1>Apa langkah <em>seterusnya?</em><span class="enh">What are the next steps?</span></h1>
-  <p class="intro">${bib('Pilih di mana cadangan anda sekarang dan tarikh mula. Checklist disusun mengikut fasa, dengan PIC dan tarikh. Semua boleh disunting.', 'Choose where your proposal stands and a start date. The checklist is arranged by phase with a PIC and due dates. Everything is editable.')}</p>
+  <p class="intro">${bib('Pilih di mana cadangan anda sekarang dan tarikh mula. Checklist disusun mengikut fasa, dengan PIC dan tarikh. Semua boleh disunting.', 'Choose where your proposal stands and a start date. The checklist is arranged by phase with a PIC and due dates. Everything is editable.')}</p>${modeSwitch()}
   <div class="card"><h2>${bi('Di mana cadangan anda sekarang?', 'Where does your proposal stand?')}</h2>
     <div class="status-cards" role="radiogroup" aria-label="Status">${Object.entries(M.STATUS).map(([k, l]) => `<label><input type="radio" name="status" data-f="status" value="${k}" ${S.status === k ? 'checked' : ''}>${esc(l.m)}<i class="en blk">${esc(l.e)}</i></label>`).join('')}</div>
     <div class="row2" style="margin-top:18px"><div class="field"><label for="mula">${bi('Tarikh mula', 'Start date')}</label><span class="hint">${bi('Jika kosong, bermula hari bekerja berikutnya.', 'If blank, starts on the next working day.')}</span><input type="date" id="mula" data-f="mula" value="${esc(S.mula)}"></div>
@@ -195,22 +217,23 @@ function pagePlan() {
 
 /* ---------- HASIL ---------- */
 function nextList() {
+  if (S.mod !== 'lengkap') { const todoQ = M.quick(S).items.filter(x => !x.done).slice(0, 3); return todoQ.length ? todoQ.map(x => `<label><input type="checkbox" data-q="${esc(x.key)}"><span><b>${bib(x.m, x.e)}</b></span></label>`).join('') : '<p class="empty-note"><b>' + bi('Semua tindakan telah ditanda siap.', 'All actions are marked done.') + '</b> ' + bi('Semak hasil dan laporkan kepada superior.', 'Review the results and report to your superior.') + '</p>'; }
   const todo = M.plan(S).tasks.filter(t => !t.done).slice(0, 3);
   return todo.length ? todo.map(t => `<label><input type="checkbox" data-done="${esc(t.id)}"><span><b>${bib(t.tugas, t.te)}</b><small>${esc(t.pic)} · ${bi('siap', 'due')} ${esc(M.fmtD(t.siap))}</small></span></label>`).join('') : '<p class="empty-note"><b>' + bi('Semua langkah telah ditanda siap.', 'All steps are marked done.') + '</b> ' + bi('Semak hasil dan laporkan kepada superior.', 'Review the results and report to your superior.') + '</p>';
 }
 function pageHasil() {
-  const PL = M.plan(S), T = M.tna(S), PI = M.pitch(S);
+  const PL = M.plan(S), PG = prog(), T = M.tna(S), PI = M.pitch(S);
   return `<div class="wrap"><p class="eyebrow">${bi('Hasil anda', 'Your results')}</p><h1>Pelan Saya. <em>Siap digunakan.</em><span class="enh">My plan. Ready to use.</span></h1>
   <p class="intro">${bib('Ini ringkasan anda. Muat turun tiga fail di bawah, dan mulakan dengan langkah pertama dalam checklist.', 'Here is your summary. Download the three files below, and start with the first step in the checklist.')}</p>
   ${!M.progress(S).tna ? '<div class="warn">' + bib('TNA belum lengkap.', 'The TNA is incomplete.') + ' <a href="#tna">' + bi('Lengkapkan', 'Complete it') + '</a></div>' : ''}
-  <div class="sum ${M.kosSummary(S).any ? 's4' : ''}"><div class="sum-i"><span>TNA</span><b>${bx(T.keputusanTajuk)}</b></div>${M.kosSummary(S).any ? `<div class="sum-i"><span>${bi('Kos', 'Cost')}</span><b>${bx(M.kosSummary(S).ringkas)}</b></div>` : ''}<div class="sum-i"><span>${bi('Anda minta', 'You request')}</span><b>${PI.kep.map(x => esc(M.cut(x.m, 60))).join('; ')}</b></div><div class="sum-i"><span>${bi('Mula', 'Start')}</span><b>${PL.mula ? esc(M.fmtD(PL.mula)) : bi('belum ditetapkan', 'not set')}</b></div></div>
-  <div class="card" style="margin-top:18px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px"><h2>${bi('Langkah seterusnya', 'Next steps')}</h2><b id="pct">${PL.done} / ${PL.total} ${bi('siap', 'done')}</b></div><div class="progress-bar"><i id="pbar" style="width:${PL.pct}%"></i></div><div class="next" id="next" style="margin-top:14px">${nextList()}</div></div>
+  <div class="sum ${M.kosSummary(S).any ? 's4' : ''}"><div class="sum-i"><span>TNA</span><b>${bx(T.keputusanTajuk)}</b></div>${M.kosSummary(S).any ? `<div class="sum-i"><span>${bi('Kos', 'Cost')}</span><b>${bx(M.kosSummary(S).ringkas)}</b></div>` : ''}<div class="sum-i"><span>${bi('Anda minta', 'You request')}</span><b>${PI.kep.map(x => esc(M.cut(x.m, 60))).join('; ')}</b></div><div class="sum-i"><span>${bi('Mula', 'Start')}</span><b>${M.mulaOf(S, PL) ? esc(M.fmtD(PL.mula)) : bi('belum ditetapkan', 'not set')}</b></div></div>
+  <div class="card" style="margin-top:18px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px"><h2>${bi('Langkah seterusnya', 'Next steps')}</h2><b id="pct">${PG.done} / ${PG.total} ${bi('siap', 'done')}</b></div><div class="progress-bar"><i id="pbar" style="width:${PG.pct}%"></i></div><div class="next" id="next" style="margin-top:14px">${nextList()}</div></div>
   <h2 style="margin:26px 0 12px">${bi('Muat turun', 'Download')}</h2>
   <div class="exports">
     <button class="exp" data-a="x-doc"><span class="ic">WORD</span><b>${bi('Dokumen TNA & pelan', 'TNA & plan document')}</b><span>${bib('TNA penuh, pitch dan checklist. Boleh disunting.', 'Full TNA, pitch and checklist. Editable.')}</span></button>
     <button class="exp" data-a="x-pptx"><span class="ic">POWERPOINT</span><b>${bi('Slaid pitch', 'Pitch slides')}</b><span>${bib('Muka depan, 5 slaid dan lampiran.', 'Cover, 5 slides and an appendix.')}</span></button>
-    <button class="exp" data-a="x-csv"><span class="ic">EXCEL</span><b>Checklist</b><span>${bib('Dengan PIC, tarikh dan bukti.', 'With PIC, due dates and proof.')}</span></button></div>
-  <details class="more"><summary>${bi('Format lain', 'Other formats')}: PDF, ${bi('kalendar', 'calendar')}, ${bi('sandaran', 'backup')}</summary><div class="cta-row" style="margin:12px 0 0"><button class="btn sm" data-a="x-pdf">${bi('Cetak / PDF', 'Print / PDF')}</button><button class="btn sm" data-a="x-ics">${bi('Kalendar (.ics)', 'Calendar (.ics)')}</button><button class="btn sm" data-a="backup" data-where="page">${bi('Sandaran (.json)', 'Backup (.json)')}</button></div><p class="hint" style="margin-top:10px">${bib('Sandaran ialah salinan data anda untuk dibuka semula atau dipindah ke peranti lain.', 'A backup is a copy of your data to reopen later or move to another device.')}</p></details>
+    <button class="exp" data-a="x-csv"><span class="ic">EXCEL</span><b>Checklist</b><span>${S.mod === 'lengkap' ? bib('Dengan PIC, tarikh dan bukti.', 'With PIC, due dates and proof.') : bib('Senarai tindakan dan status siap.', 'The action list and what is done.')}</span></button></div>
+  <details class="more"><summary>${bi('Format lain', 'Other formats')}: PDF, ${S.mod === 'lengkap' ? bi('kalendar', 'calendar') + ', ' : ''}${bi('sandaran', 'backup')}</summary><div class="cta-row" style="margin:12px 0 0"><button class="btn sm" data-a="x-pdf">${bi('Cetak / PDF', 'Print / PDF')}</button>${S.mod === 'lengkap' ? `<button class="btn sm" data-a="x-ics">${bi('Kalendar (.ics)', 'Calendar (.ics)')}</button>` : ''}<button class="btn sm" data-a="backup" data-where="page">${bi('Sandaran (.json)', 'Backup (.json)')}</button></div>${S.mod === 'lengkap' ? '' : `<p class="hint" style="margin-top:10px">${bib('Kalendar (.ics) tersedia dalam mod Lengkap di halaman CHECKLIST.', 'The calendar (.ics) is available in Detailed mode on the CHECKLIST page.')}</p>`}<p class="hint" style="margin-top:10px">${bib('Sandaran ialah salinan data anda untuk dibuka semula atau dipindah ke peranti lain.', 'A backup is a copy of your data to reopen later or move to another device.')}</p></details>
   <p class="privacy" style="margin-top:14px">${bib('Penting: data hanya ada dalam pelayar (browser) ini. Jika anda kosongkan data pelayar atau tukar peranti, ia hilang. Muat turun fail sebelum menutup.', 'Important: your data lives only in this browser. If you clear browser data or switch devices, it is lost. Download your files before closing.')}</p>
   <details class="more"><summary>${bi('Lihat dokumen penuh', 'View full document')}</summary><div class="doc" id="doc" style="margin-top:12px">${M.docBody(S)}</div></details>
   ${S.lama ? `<details class="more"><summary>${bi('Catatan daripada planner lama', 'Notes from the old planner')}</summary>${(S.lama.replies || []).filter(M.has).map(r => `<pre class="prompt">${esc(r)}</pre>`).join('')}</details>` : ''}
@@ -241,7 +264,7 @@ const GLOSS = [
 ];
 function pageBantuan() {
   return `<div class="wrap" style="max-width:820px"><p class="eyebrow">${bi('Panduan', 'Guide')}</p><h1>Ringkas. <em>Tiga langkah.</em><span class="enh">Simple. Three steps.</span></h1>
-  <div class="card" style="margin-top:24px"><ol style="margin-top:4px;font-size:15px"><li><b>TNA:</b> ${bib('tulis isu dan jawab semakan punca. Dokumen TNA dijana.', 'describe the issue and answer the root-cause checks. A TNA document is generated.')}</li><li><b>PITCH:</b> ${bib('pilih apa yang anda mahu daripada superior. Skrip dan slaid siap.', 'choose what you want from your superior. Script and slides are ready.')}</li><li><b>CHECKLIST:</b> ${bib('pilih tarikh mula. Langkah dengan PIC dan tarikh disusun.', 'pick a start date. Steps with PIC and dates are arranged.')}</li><li><b>${bi('Pelan Saya', 'My plan')}:</b> ${bib('muat turun dokumen, slaid dan checklist.', 'download the document, slides and checklist.')}</li></ol></div>
+  <div class="card" style="margin-top:24px"><ol style="margin-top:4px;font-size:15px"><li><b>TNA:</b> ${bib('tulis isu dan jawab semakan punca. Dokumen TNA dijana.', 'describe the issue and answer the root-cause checks. A TNA document is generated.')}</li><li><b>PITCH:</b> ${bib('pilih apa yang anda mahu daripada superior. Skrip dan slaid siap.', 'choose what you want from your superior. Script and slides are ready.')}</li><li><b>CHECKLIST:</b> ${bib('tanda tindakan yang siap. Mahu tarikh dan PIC? Pilih mod Lengkap.', 'tick the actions you have done. Want dates and a PIC? Choose the Detailed mode.')}</li><li><b>${bi('Pelan Saya', 'My plan')}:</b> ${bib('muat turun dokumen, slaid dan checklist.', 'download the document, slides and checklist.')}</li></ol></div>
   <div class="card"><h2>${bi('Adakah ini AI?', 'Is this AI?')}</h2><p style="font-size:15px;margin-top:6px">${bib('Draf dijana oleh peraturan MOVE berdasarkan kerangka TNA yang diiktiraf, jadi ia berfungsi tanpa akaun AI. Untuk TNA dan skrip yang lebih khusus, anda boleh menyalin prompt ke ChatGPT atau Claude. AI hanya dibenarkan merujuk senarai sumber yang dinyatakan.', 'Drafts are generated by MOVE rules based on recognised TNA frameworks, so it works without an AI account. For a more specific TNA and script, you can copy a prompt into ChatGPT or Claude. The AI may cite only the listed sources.')}</p></div>
   <div class="card"><h2>${bi('Data anda', 'Your data')}</h2><p style="font-size:15px;margin-top:6px">${bib('Semua disimpan dalam pelayar (browser) anda sahaja. Tiada akaun dan tiada yang dihantar ke mana-mana. Kerana itu, muat turun fail sebelum menukar peranti atau mengosongkan data pelayar. Jika menggunakan AI, jangan tampal nama atau maklumat sulit.', 'Everything is stored in your browser only. There is no account and nothing is sent anywhere. So download your files before changing devices or clearing browser data. If you use AI, do not paste names or confidential information.')}</p></div>
   <div class="card"><h2>${bi('Istilah', 'Glossary')}</h2><div class="gloss">${GLOSS.map(([m, e, dm, de]) => `<div><b>${esc(m)}</b> <i class="en">${esc(e)}</i><p>${esc(dm)}<i class="en blk">${esc(de)}</i></p></div>`).join('')}</div></div>
@@ -249,7 +272,7 @@ function pageBantuan() {
     <details><summary><b>${bi('Saya tidak tahu jawapan semakan.', 'I do not know the answer to a check.')}</b></summary><p style="margin-top:6px">${bib('Pilih "Tak pasti". Planner menyenaraikannya sebagai perkara untuk disahkan.', 'Choose "Not sure". The planner lists it as an item to verify.')}</p></details>
     <details><summary><b>${bi('Boleh buka sandaran planner lama?', 'Can I open a backup from the old planner?')}</b></summary><p style="margin-top:6px">${bib('Boleh. Menu, "Buka sandaran". Data lama dalam pelayar yang sama dibawa masuk secara automatik.', 'Yes. Menu, "Open backup". Old data in the same browser is imported automatically.')}</p></details>
     <details><summary><b>${bi('Fail tidak muncul selepas muat turun.', 'The file did not appear after downloading.')}</b></summary><p style="margin-top:6px">${bib('Klik pautan di bahagian atas halaman, dan semak folder Downloads.', 'Click the link at the top of the page, and check your Downloads folder.')}</p></details>
-    <details><summary><b>${bi('Checklist mengira cuti umum?', 'Does the checklist account for public holidays?')}</b></summary><p style="margin-top:6px">${bib('Tidak. Hanya Isnin hingga Jumaat. Semak tarikh anda.', 'No. Monday to Friday only. Check your dates.')}</p></details></div>
+    <details><summary><b>${bi('Checklist mengira cuti umum?', 'Does the checklist account for public holidays?')}</b></summary><p style="margin-top:6px">${bib('Tidak. Dalam mod Lengkap, tarikh hanya mengira Isnin hingga Jumaat. Semak tarikh anda.', 'No. In Detailed mode, dates count Monday to Friday only. Check your dates.')}</p></details></div>
   <div class="nav-row"><a class="btn" href="#mula">← ${bi('Utama', 'Home')}</a><button class="btn danger" data-a="clear">${bi('Padam semua data', 'Delete all data')}</button></div></div>`;
 }
 
@@ -266,9 +289,9 @@ function refresh() {
   const r = route(); stepper(r);
   if (r === 'tna' && $('#tna-pv')) $('#tna-pv').innerHTML = tnaPreview();
   if (r === 'pitch') { const ae = document.activeElement; if (!(ae && ae.id === 'skrip')) $('#pitch-pv').innerHTML = pitchPreview(); }
-  if (r === 'plan') { const D = planDyn(); $('#plan-warn').innerHTML = D.warn; $('#plan-sum').innerHTML = D.sum; const ae = document.activeElement; if (!(ae && ae.closest && ae.closest('#plan-tasks'))) $('#plan-tasks').innerHTML = D.tasks; }
+  if (r === 'plan' && $('#plan-tasks')) { const D = planDyn(); $('#plan-warn').innerHTML = D.warn; $('#plan-sum').innerHTML = D.sum; const ae = document.activeElement; if (!(ae && ae.closest && ae.closest('#plan-tasks'))) $('#plan-tasks').innerHTML = D.tasks; }
 }
-function updateProgress() { const PL = M.plan(S); if ($('#pct')) { $('#pct').innerHTML = PL.done + ' / ' + PL.total + ' ' + bi('siap', 'done'); $('#pbar').style.width = PL.pct + '%'; $('#next').innerHTML = nextList(); } }
+function updateProgress() { const PL = prog(); if ($('#pct')) { $('#pct').innerHTML = PL.done + ' / ' + PL.total + ' ' + bi('siap', 'done'); $('#pbar').style.width = PL.pct + '%'; $('#next').innerHTML = nextList(); } if ($('#qsum')) { $('#qsum').innerHTML = PL.done + ' / ' + PL.total + ' ' + bi('siap', 'done'); $('#qbar').style.width = PL.pct + '%'; } }
 
 /* ---------- eksport ---------- */
 const stamp = () => M.todayISO();
@@ -300,8 +323,13 @@ async function exportPPTX() {
   ap.addText([{ text: 'Lampiran: Checklist tindakan', options: { bold: true, fontSize: 20, color: '17191D' } }, { text: '   Appendix: Action checklist', options: { italic: true, fontSize: 11, color: '6B7280' } }], { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontFace: 'Arial' });
   const H = t => ({ text: t, options: { bold: true, color: 'FFFFFF', fill: { color: 'D51F35' }, fontSize: 9, fontFace: 'Arial' } });
   const cellB = (m, e) => ({ text: e ? [{ text: m, options: { breakLine: true, fontSize: 8, color: '2D3136' } }, { text: e, options: { italic: true, fontSize: 6.5, color: '6B7280' } }] : m, options: { fontFace: 'Arial', fontSize: 8, valign: 'top', color: '2D3136' } });
+  if (S.mod !== 'lengkap') {
+    const Q = M.quick(S), qrows = [[H('No'), H('Tindakan / Action'), H('Siap / Done')]].concat(Q.items.map((x, i) => [{ text: String(i + 1), options: { fontSize: 10, fontFace: 'Arial', valign: 'top' } }, { text: [{ text: x.m, options: { breakLine: true, fontSize: 11, color: '2D3136' } }, { text: x.e, options: { italic: true, fontSize: 8.5, color: '6B7280' } }], options: { fontFace: 'Arial', valign: 'top' } }, { text: x.done ? 'Ya / Yes' : '', options: { fontSize: 10, fontFace: 'Arial', valign: 'top', color: '1F7A4D', bold: true } }]));
+    ap.addTable(qrows, { x: 0.6, y: 0.85, w: 8.9, colW: [0.5, 7.2, 1.2], border: { type: 'solid', color: 'D8D6CF', pt: 0.5 }, autoPage: true, autoPageRepeatHeader: true, newSlideStartY: 0.5, margin: 0.05 });
+  } else {
   const rows = [[H('No'), H('Tugasan / Task'), H('PIC'), H('Siap / Due'), H('Bukti / Proof')]].concat(PL.tasks.map((t, i) => [{ text: String(i + 1), options: { fontSize: 8.5, fontFace: 'Arial', valign: 'top' } }, cellB(t.tugas, t.te), { text: t.pic, options: { fontSize: 8.5, fontFace: 'Arial', valign: 'top', color: '2D3136' } }, { text: M.fmtShort(t.siap), options: { fontSize: 8.5, fontFace: 'Arial', valign: 'top', color: '2D3136' } }, cellB(t.bukti, t.be)]));
   ap.addTable(rows, { x: 0.6, y: 0.78, w: 8.9, colW: [0.35, 3.6, 1.6, 0.75, 2.6], border: { type: 'solid', color: 'D8D6CF', pt: 0.5 }, autoPage: true, autoPageRepeatHeader: true, newSlideStartY: 0.5, margin: 0.03 });
+  }
   try { await p.writeFile({ fileName: 'MOVE-slaid-pitch.pptx' }); $('#dl-note').hidden = true; toast('Slaid dimuat turun <i class="en">Slides downloaded</i>: MOVE-slaid-pitch.pptx'); } catch (e) { toast('Gagal menjana slaid <i class="en">Could not build slides</i>: ' + esc(e.message)); }
 }
 function exportPDF() {
@@ -327,6 +355,12 @@ document.addEventListener('change', e => {
   if (t.dataset.d) { S.diag[t.dataset.d] = t.value === 'x' ? null : Number(t.value); save(); refresh(); }
   if (t.dataset.f && (t.type === 'radio' || t.type === 'date')) { S[t.dataset.f] = t.value; save(); refresh(); }
   if (t.dataset.f === 'bidang') { S.bidang = t.value; save(); render(); }
+  if (t.dataset.f === 'mod') { render(); }
+  if (t.dataset.q) {
+    qToggle(t.dataset.q, t.checked); save();
+    if (route() === 'plan') { const row = t.closest('.qa'); if (row) row.classList.toggle('done', t.checked); }
+    updateProgress();
+  }
   if (t.dataset.done) {
     ensureTasks(); const x = S.tasks.find(a => a.id === t.dataset.done); if (x) x.done = t.checked; save();
     if (route() === 'plan') { const row = t.closest('.task'); if (row) row.classList.toggle('done', t.checked); } else updateProgress();
@@ -355,9 +389,9 @@ document.addEventListener('click', e => {
   if (a === 'backup') download(JSON.stringify(Object.assign({ version: 6 }, S), null, 2), 'MOVE-sandaran-backup.json', 'application/json');
   if (a === 'import') $('#import-file').click();
   if (a === 'skrip-reset') { S.skripEdit = ''; save(); $('#pitch-pv').innerHTML = pitchPreview(); }
-  if (a === 'add-task') { ensureTasks(); const last = S.tasks[S.tasks.length - 1]; S.tasks.push({ id: M.uid(), fasa: last ? last.fasa : 'laksana', tugas: 'Tugasan baharu', te: 'New task', pic: '', mula: last ? last.siap : '', siap: last ? last.siap : '', bukti: '', be: '', dep: '', done: false }); save(); $('#plan-tasks').innerHTML = planDyn().tasks; const rows = $$('#plan-tasks .task'); rows[rows.length - 1].querySelector('textarea').focus(); }
-  if (a === 'del-task') { ensureTasks(); S.tasks = S.tasks.filter(x => x.id !== b.dataset.id); if (!S.tasks.length) { S.tasks = null; S.tasksSig = ''; } save(); $('#plan-tasks').innerHTML = planDyn().tasks; refresh(); }
-  if (a === 'regen') ask('Jana semula checklist? <i class="en">Regenerate the checklist?</i>', 'Suntingan dan tanda siap akan diganti. <i class="en blk">Your edits and ticks will be replaced.</i>', () => { S.tasks = null; S.tasksSig = ''; save(); render(); });
+  if (a === 'add-task') { ensureTasks(); const last = S.tasks[S.tasks.length - 1]; S.tasks.push({ id: M.uid(), fasa: last ? last.fasa : 'laksana', tugas: 'Tugasan baharu', te: 'New task', pic: '', mula: last ? last.siap : '', siap: last ? last.siap : '', bukti: '', be: '', dep: '', done: false, grp: last ? last.grp : '' }); save(); $('#plan-tasks').innerHTML = planDyn().tasks; const rows = $$('#plan-tasks .task'); rows[rows.length - 1].querySelector('textarea').focus(); }
+  if (a === 'del-task') { ensureTasks(); S.tasks = S.tasks.filter(x => x.id !== b.dataset.id); if (!S.tasks.length) { S.tasks = null; S.tasksSig = ''; S.qdone = {}; } save(); $('#plan-tasks').innerHTML = planDyn().tasks; refresh(); }
+  if (a === 'regen') ask('Jana semula checklist? <i class="en">Regenerate the checklist?</i>', 'Suntingan dan tanda siap akan diganti. <i class="en blk">Your edits and ticks will be replaced.</i>', () => { S.tasks = null; S.tasksSig = ''; S.qdone = {}; save(); render(); });
   if (a === 'ai-copy') copyText(M.aiScriptPrompt(S));
   if (a === 'ai-tna-copy') copyText(M.aiTnaPrompt(S));
   if (a === 'ai-tna-apply') {
